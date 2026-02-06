@@ -4,6 +4,7 @@ import BreakingNewsTicker from "@/components/BreakingNewsTicker";
 import SponsoredBanner from "@/components/SponsoredBanner";
 import FeaturedNews from "@/components/FeaturedNews";
 import Sidebar from "@/components/Sidebar";
+import PopularNewsSection from "@/components/PopularNewsSection";
 
 const Index = () => {
   return (
@@ -27,6 +28,9 @@ const Index = () => {
           </div>
         </div>
       </main>
+
+      {/* Popular News Section */}
+      <PopularNewsSection />
 
       {/* Footer */}
       <footer className="bg-nav text-nav-foreground py-6 mt-8">
