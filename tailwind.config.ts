@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        kannada: ['"Noto Sans Kannada"', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,6 +50,27 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        nav: {
+          DEFAULT: "hsl(var(--nav-bg))",
+          foreground: "hsl(var(--nav-foreground))",
+        },
+        ticker: {
+          DEFAULT: "hsl(var(--ticker-bg))",
+          foreground: "hsl(var(--ticker-foreground))",
+        },
+        live: "hsl(var(--live-badge))",
+        "search-btn": {
+          DEFAULT: "hsl(var(--search-btn))",
+          foreground: "hsl(var(--search-btn-foreground))",
+        },
+        quote: {
+          DEFAULT: "hsl(var(--quote-bg))",
+          foreground: "hsl(var(--quote-foreground))",
+        },
+        sponsored: {
+          DEFAULT: "hsl(var(--sponsored-tag))",
+          foreground: "hsl(var(--sponsored-tag-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -65,20 +89,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
