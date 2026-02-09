@@ -42,6 +42,7 @@ const menuItems: MenuItem[] = [
   },
   { label: "ಉದ್ಯೋಗ ಮಾಹಿತಿ", href: "/jobs" },
   { label: "ಫೋಟೊ ಗ್ಯಾಲರಿ", href: "/gallery" },
+  { label: "ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ", href: "/feedback" },
 ];
 
 const NavigationBar = () => {
