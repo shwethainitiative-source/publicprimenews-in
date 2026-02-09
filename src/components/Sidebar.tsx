@@ -5,7 +5,7 @@ const Sidebar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col gap-5 h-full">
       {/* Search */}
       <div className="flex border border-border rounded overflow-hidden">
         <input
@@ -21,7 +21,7 @@ const Sidebar = () => {
       </div>
 
       {/* Quote of the day */}
-      <div className="bg-quote text-quote-foreground rounded-lg p-5 min-h-[350px] md:min-h-[420px] flex flex-col justify-between">
+      <div className="bg-quote text-quote-foreground rounded-lg p-5 flex-1 flex flex-col justify-between">
         <div>
           <h3 className="text-sm font-bold mb-3 border-b border-quote-foreground/20 pb-2">
             ಧೀ ಟ್ರುಥ್ ಆಫ್ ಟುಡೇ (ಸುಭಾಷಿತ)

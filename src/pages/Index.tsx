@@ -18,11 +18,11 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+        <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+          <div className="lg:w-2/3">
             <FeaturedNews />
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:w-1/3 flex flex-col">
             <Sidebar />
           </div>
         </div>
