@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import logoImage from "@/assets/primenews-logo.jpeg";
 
 const HeaderBar = () => {
   const today = useMemo(() => {
@@ -20,12 +21,14 @@ const HeaderBar = () => {
         </div>
 
         {/* Logo */}
-        <div className="text-center">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-primary tracking-wide">
-            ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್
-          </h1>
-          <p className="text-xs text-muted-foreground tracking-widest">
-            ಸತ್ಯದ ಧ್ವನಿ • ಜನರ ಪರ
+        <div className="text-center flex flex-col items-center">
+          <img
+            src={logoImage}
+            alt="Public Prime News"
+            className="h-12 md:h-16 w-auto object-contain"
+          />
+          <p className="text-[10px] md:text-xs text-muted-foreground tracking-[0.2em] mt-1 font-medium">
+            Clear Vision, True Mission
           </p>
         </div>
 
