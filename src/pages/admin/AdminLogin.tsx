@@ -20,7 +20,7 @@ const AdminLogin = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(email.trim().toLowerCase(), password.trim());
     setLoading(false);
     if (error) {
       toast({ title: "Login Failed", description: error.message, variant: "destructive" });
