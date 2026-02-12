@@ -29,21 +29,20 @@ const HeroSection = () => {
   return (
     <section className="container mx-auto px-4 py-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Left - Large Featured */}
+        {/* Left - Large Featured Card with headline BELOW image */}
         <div className="lg:col-span-2">
-          <article className="relative rounded-lg overflow-hidden group cursor-pointer bg-card shadow-md h-full">
+          <article className="rounded-lg overflow-hidden group cursor-pointer bg-card shadow-md h-full flex flex-col">
             <img
               src={heroNews.image}
               alt={heroNews.titleKn}
-              className="w-full h-[300px] md:h-[400px] object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-[250px] md:h-[340px] object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-accent/80 via-transparent to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-5">
-              <h2 className="text-accent-foreground text-xl md:text-2xl font-extrabold leading-tight mb-2">
-                {heroNews.titleKn}
+            <div className="p-4 flex-1">
+              <h2 className="text-card-foreground text-xl md:text-2xl font-extrabold leading-tight mb-2">
+                {heroNews.title}
               </h2>
-              <div className="flex items-center gap-1.5 text-accent-foreground/70 text-xs">
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{heroNews.time}</span>
               </div>
@@ -51,7 +50,7 @@ const HeroSection = () => {
           </article>
         </div>
 
-        {/* Right - 2 Stacked Cards */}
+        {/* Right - 2 Stacked Cards with overlay text */}
         <div className="flex flex-col gap-4">
           {sideNews.map((news) => (
             <article
@@ -67,7 +66,7 @@ const HeroSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-accent/80 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <h3 className="text-accent-foreground text-sm md:text-base font-bold leading-snug mb-1">
-                  {news.titleKn}
+                  {news.title}
                 </h3>
                 <div className="flex items-center gap-1 text-accent-foreground/70 text-[11px]">
                   <Clock className="w-3 h-3" />

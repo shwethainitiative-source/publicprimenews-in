@@ -37,20 +37,20 @@ const categories = [
 const LatestNewsCategorySection = () => {
   return (
     <section className="container mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left - Latest News List */}
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left - Latest News List (2/3) */}
+        <div className="lg:col-span-2">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-lg font-extrabold whitespace-nowrap uppercase tracking-wide">
               Latest News
             </h2>
             <div className="flex-1 h-0.5 bg-primary" />
           </div>
-          <div className="space-y-3">
+          <div className="divide-y divide-border">
             {latestNews.map((news) => (
               <article
                 key={news.id}
-                className="flex gap-3 cursor-pointer group rounded-md hover:bg-muted/50 transition-colors p-2"
+                className="flex gap-3 cursor-pointer group py-3 first:pt-0 last:pb-0"
               >
                 <img
                   src={news.image}
@@ -72,13 +72,13 @@ const LatestNewsCategorySection = () => {
           </div>
         </div>
 
-        {/* Right - Category Cards */}
+        {/* Right - Category Cards 2x2 + Ad (1/3) */}
         <div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {categories.map((cat) => (
               <div
                 key={cat.id}
-                className="relative rounded-lg overflow-hidden cursor-pointer group h-[140px]"
+                className="relative rounded-lg overflow-hidden cursor-pointer group h-[130px]"
               >
                 <img
                   src="/placeholder.svg"

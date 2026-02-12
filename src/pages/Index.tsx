@@ -22,9 +22,9 @@ const Index = () => {
       <LatestNewsCategorySection />
 
       {/* Full-Width Ad Banner */}
-      <div className="container mx-auto px-4">
-        <div className="bg-muted border border-border rounded-lg flex items-center justify-center h-20">
-          <span className="text-muted-foreground text-lg font-bold tracking-[0.3em] uppercase">
+      <div className="container mx-auto px-4 py-2">
+        <div className="bg-muted border border-border rounded-lg flex items-center justify-center h-16">
+          <span className="text-muted-foreground text-sm font-bold tracking-[0.3em] uppercase">
             Advertisement
           </span>
         </div>
