@@ -2,10 +2,9 @@ import HeaderBar from "@/components/HeaderBar";
 import NavigationBar from "@/components/NavigationBar";
 import BreakingNewsTicker from "@/components/BreakingNewsTicker";
 import SponsoredBanner from "@/components/SponsoredBanner";
-import FeaturedNews from "@/components/FeaturedNews";
-import Sidebar from "@/components/Sidebar";
-import PopularNewsSection from "@/components/PopularNewsSection";
-import FeaturedNewsSection from "@/components/FeaturedNewsSection";
+import HeroSection from "@/components/HeroSection";
+import LatestNewsCategorySection from "@/components/LatestNewsCategorySection";
+import SpecialSections from "@/components/SpecialSections";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -16,23 +15,23 @@ const Index = () => {
       <BreakingNewsTicker />
       <SponsoredBanner />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
-        <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-          <div className="lg:w-2/3">
-            <FeaturedNews />
-          </div>
-          <div className="lg:w-1/3 flex flex-col">
-            <Sidebar />
-          </div>
+      {/* Hero Section */}
+      <HeroSection />
+
+      {/* Latest News + Category Section */}
+      <LatestNewsCategorySection />
+
+      {/* Full-Width Ad Banner */}
+      <div className="container mx-auto px-4">
+        <div className="bg-muted border border-border rounded-lg flex items-center justify-center h-20">
+          <span className="text-muted-foreground text-lg font-bold tracking-[0.3em] uppercase">
+            Advertisement
+          </span>
         </div>
-      </main>
+      </div>
 
-      {/* Popular News Section */}
-      <PopularNewsSection />
-
-      {/* Featured News Section */}
-      <FeaturedNewsSection />
+      {/* Special Sections */}
+      <SpecialSections />
 
       {/* Footer */}
       <Footer />
