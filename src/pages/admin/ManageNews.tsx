@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2 } from "lucide-react";
@@ -22,7 +22,8 @@ const ManageNews = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Article | null>(null);
   const [form, setForm] = useState({
-    title: "", description: "", category_id: "", tags: "",
+    title: "", title_en: "", description: "", description_en: "",
+    category_id: "", tags: "",
     is_featured: false, is_popular: false, is_breaking: false,
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -41,7 +42,7 @@ const ManageNews = () => {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ title: "", description: "", category_id: "", tags: "", is_featured: false, is_popular: false, is_breaking: false });
+    setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", is_featured: false, is_popular: false, is_breaking: false });
     setThumbnailFile(null);
     setDialogOpen(true);
   };
@@ -49,7 +50,9 @@ const ManageNews = () => {
   const openEdit = (a: Article) => {
     setEditing(a);
     setForm({
-      title: a.title, description: a.description ?? "", category_id: a.category_id ?? "",
+      title: a.title, title_en: (a as any).title_en ?? "",
+      description: a.description ?? "", description_en: (a as any).description_en ?? "",
+      category_id: a.category_id ?? "",
       tags: (a.tags ?? []).join(", "), is_featured: a.is_featured, is_popular: a.is_popular, is_breaking: a.is_breaking,
     });
     setThumbnailFile(null);
@@ -71,8 +74,9 @@ const ManageNews = () => {
     }
 
     const tags = form.tags.split(",").map(t => t.trim()).filter(Boolean);
-    const payload = {
-      title: form.title, description: form.description || null,
+    const payload: any = {
+      title: form.title, title_en: form.title_en || null,
+      description: form.description || null, description_en: form.description_en || null,
       category_id: form.category_id || null, tags, thumbnail_url,
       is_featured: form.is_featured, is_popular: form.is_popular, is_breaking: form.is_breaking,
       created_by: user?.id ?? null,
@@ -113,6 +117,7 @@ const ManageNews = () => {
               {a.thumbnail_url && <img src={a.thumbnail_url} alt="" className="w-20 h-14 object-cover rounded" />}
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-foreground truncate">{a.title}</h3>
+                {(a as any).title_en && <p className="text-xs text-muted-foreground truncate">{(a as any).title_en}</p>}
                 <p className="text-xs text-muted-foreground">{getCategoryName(a.category_id)} • {new Date(a.created_at).toLocaleDateString()}</p>
                 <div className="flex gap-1 mt-1">
                   {a.is_featured && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Featured</span>}
@@ -136,8 +141,10 @@ const ManageNews = () => {
             <DialogTitle>{editing ? "Edit Article" : "Add New Article"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div><Label>Title (ಶೀರ್ಷಿಕೆ)</Label><Input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></div>
-            <div><Label>Description (ವಿವರಣೆ)</Label><Textarea rows={4} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} /></div>
+            <div><Label>Title - ಕನ್ನಡ (ಶೀರ್ಷಿಕೆ)</Label><Input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></div>
+            <div><Label>Title - English</Label><Input value={form.title_en} onChange={e => setForm({ ...form, title_en: e.target.value })} placeholder="English title (optional)" /></div>
+            <div><Label>Description - ಕನ್ನಡ (ವಿವರಣೆ)</Label><Textarea rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} /></div>
+            <div><Label>Description - English</Label><Textarea rows={3} value={form.description_en} onChange={e => setForm({ ...form, description_en: e.target.value })} placeholder="English description (optional)" /></div>
             <div><Label>Category</Label>
               <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.category_id} onChange={e => setForm({ ...form, category_id: e.target.value })}>
                 <option value="">Select category</option>

@@ -1,53 +1,60 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MenuItem {
-  label: string;
+  labelKn: string;
+  labelEn: string;
   href?: string;
-  children?: { label: string; href: string }[];
+  children?: { labelKn: string; labelEn: string; href: string }[];
 }
 
 const menuItems: MenuItem[] = [
-  { label: "ಮುಖಪುಟ", href: "/" },
-  { label: "ನಮ್ಮ ಬಗ್ಗೆ", href: "/about" },
+  { labelKn: "ಮುಖಪುಟ", labelEn: "Home", href: "/" },
+  { labelKn: "ನಮ್ಮ ಬಗ್ಗೆ", labelEn: "About Us", href: "/about" },
   {
-    label: "ಕನ್ನಡನಾಡಿ",
+    labelKn: "ಕನ್ನಡನಾಡಿ", labelEn: "Kannadanadi",
     children: [
-      { label: "ನಮ್ಮೂರ ಸುದ್ದಿ", href: "/nammura-suddi" },
-      { label: "ಉಡುಪಿ", href: "/udupi" },
-      { label: "ಕಾರ್ಕಳ", href: "/karkala" },
+      { labelKn: "ನಮ್ಮೂರ ಸುದ್ದಿ", labelEn: "Local News", href: "/category/nammura-suddi" },
+      { labelKn: "ಉಡುಪಿ", labelEn: "Udupi", href: "/category/udupi" },
+      { labelKn: "ಕಾರ್ಕಳ", labelEn: "Karkala", href: "/category/karkala" },
     ],
   },
-  { label: "ಅಪರಾಧ ಲೋಕ", href: "/crime" },
-  { label: "ರಾಜಕೀಯ", href: "/politics" },
-  { label: "ಶಿಕ್ಷಣ", href: "/education" },
+  { labelKn: "ಅಪರಾಧ ಲೋಕ", labelEn: "Crime", href: "/category/crime" },
+  { labelKn: "ರಾಜಕೀಯ", labelEn: "Politics", href: "/category/politics" },
+  { labelKn: "ಶಿಕ್ಷಣ", labelEn: "Education", href: "/category/education" },
   {
-    label: "ವಿಶೇಷ ಲೇಖನಗಳು",
+    labelKn: "ವಿಶೇಷ ಲೇಖನಗಳು", labelEn: "Special Articles",
     children: [
-      { label: "ಆರೋಗ್ಯವೇ ಭಾಗ್ಯ", href: "/health" },
-      { label: "ಕೃಷಿ ಮಾಹಿತಿ", href: "/agriculture" },
-      { label: "ಸೋಷಿಯಲ್ ಮೀಡಿಯಾ ಕಥೆಗಳು", href: "/social-media" },
-      { label: "ಬರಹಗಾರರಾಗಿ, ನೀವು ಬರೆಯಿರಿ ..?", href: "/write" },
+      { labelKn: "ಆರೋಗ್ಯವೇ ಭಾಗ್ಯ", labelEn: "Health", href: "/category/health" },
+      { labelKn: "ಕೃಷಿ ಮಾಹಿತಿ", labelEn: "Agriculture", href: "/category/agriculture" },
+      { labelKn: "ಸೋಷಿಯಲ್ ಮೀಡಿಯಾ ಕಥೆಗಳು", labelEn: "Social Media Stories", href: "/category/social-media" },
+      { labelKn: "ಬರಹಗಾರರಾಗಿ, ನೀವು ಬರೆಯಿರಿ ..?", labelEn: "Write for Us", href: "/category/write" },
     ],
   },
   {
-    label: "ಸಂದರ್ಶನಗಳು",
+    labelKn: "ಸಂದರ್ಶನಗಳು", labelEn: "Interviews",
     children: [
-      { label: "ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್ ಸಂದರ್ಶನಗಳು", href: "/interviews" },
-      { label: "ವಾಯ್ಸ್ ಆಫ್ ಪಬ್ಲಿಕ್", href: "/voice-of-public" },
-      { label: "ಭ್ರಷ್ಟರ ಬೇಟೆಗೆ ಮೂರನೇ ಕಣ್ಣು..", href: "/third-eye" },
-      { label: "ಸಾಧಕರ ಚರಿತ್ರೆ..", href: "/achievers" },
-      { label: "ನಮ್ಮೂರ ಹೆಮ್ಮೆಯ ಸಾಧಕರು", href: "/local-achievers" },
+      { labelKn: "ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್ ಸಂದರ್ಶನಗಳು", labelEn: "Interviews", href: "/category/interviews" },
+      { labelKn: "ವಾಯ್ಸ್ ಆಫ್ ಪಬ್ಲಿಕ್", labelEn: "Voice of Public", href: "/category/voice-of-public" },
+      { labelKn: "ಭ್ರಷ್ಟರ ಬೇಟೆಗೆ ಮೂರನೇ ಕಣ್ಣು..", labelEn: "Third Eye", href: "/category/third-eye" },
+      { labelKn: "ಸಾಧಕರ ಚರಿತ್ರೆ..", labelEn: "Achievers", href: "/category/achievers" },
+      { labelKn: "ನಮ್ಮೂರ ಹೆಮ್ಮೆಯ ಸಾಧಕರು", labelEn: "Local Achievers", href: "/category/local-achievers" },
     ],
   },
-  { label: "ಉದ್ಯೋಗ ಮಾಹಿತಿ", href: "/jobs" },
-  { label: "ಫೋಟೊ ಗ್ಯಾಲರಿ", href: "/gallery" },
-  { label: "ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ", href: "/feedback" },
+  { labelKn: "ಉದ್ಯೋಗ ಮಾಹಿತಿ", labelEn: "Jobs", href: "/category/jobs" },
+  { labelKn: "ಫೋಟೊ ಗ್ಯಾಲರಿ", labelEn: "Photo Gallery", href: "/category/gallery" },
+  { labelKn: "ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ", labelEn: "Feedback", href: "/category/feedback" },
 ];
 
 const NavigationBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const { language } = useLanguage();
+
+  const getLabel = (item: { labelKn: string; labelEn: string }) =>
+    language === "en" ? item.labelEn : item.labelKn;
 
   const toggleMobileDropdown = (label: string) => {
     setOpenDropdown(openDropdown === label ? null : label);
@@ -58,7 +65,7 @@ const NavigationBar = () => {
       <div className="container mx-auto px-4">
         {/* Mobile toggle */}
         <div className="flex items-center justify-between md:hidden py-2">
-          <span className="font-semibold text-sm">ಮೆನು</span>
+          <span className="font-semibold text-sm">{language === "kn" ? "ಮೆನು" : "Menu"}</span>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="p-2 text-nav-foreground"
@@ -76,33 +83,33 @@ const NavigationBar = () => {
         {/* Desktop menu */}
         <ul className="hidden md:flex items-center gap-0 text-sm font-medium">
           {menuItems.map((item) => (
-            <li key={item.label} className="relative group">
+            <li key={item.labelKn} className="relative group">
               {item.children ? (
                 <>
                   <button className="flex items-center gap-1 px-3 py-3 hover:bg-primary/20 transition-colors whitespace-nowrap">
-                    {item.label}
+                    {getLabel(item)}
                     <ChevronDown className="w-3 h-3" />
                   </button>
                   <ul className="absolute left-0 top-full bg-nav border border-border/20 rounded-b shadow-lg min-w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     {item.children.map((child) => (
-                      <li key={child.label}>
-                        <a
-                          href={child.href}
+                      <li key={child.labelKn}>
+                        <Link
+                          to={child.href}
                           className="block px-4 py-2.5 text-sm hover:bg-primary/20 transition-colors whitespace-nowrap"
                         >
-                          {child.label}
-                        </a>
+                          {getLabel(child)}
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 </>
               ) : (
-                <a
-                  href={item.href}
+                <Link
+                  to={item.href!}
                   className="block px-3 py-3 hover:bg-primary/20 transition-colors whitespace-nowrap"
                 >
-                  {item.label}
-                </a>
+                  {getLabel(item)}
+                </Link>
               )}
             </li>
           ))}
@@ -112,40 +119,40 @@ const NavigationBar = () => {
         {mobileOpen && (
           <ul className="md:hidden pb-3 space-y-1 text-sm">
             {menuItems.map((item) => (
-              <li key={item.label}>
+              <li key={item.labelKn}>
                 {item.children ? (
                   <>
                     <button
-                      onClick={() => toggleMobileDropdown(item.label)}
+                      onClick={() => toggleMobileDropdown(item.labelKn)}
                       className="flex items-center justify-between w-full px-3 py-2.5 hover:bg-primary/20 transition-colors"
                     >
-                      {item.label}
+                      {getLabel(item)}
                       <ChevronDown
-                        className={`w-3 h-3 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`}
+                        className={`w-3 h-3 transition-transform ${openDropdown === item.labelKn ? "rotate-180" : ""}`}
                       />
                     </button>
-                    {openDropdown === item.label && (
+                    {openDropdown === item.labelKn && (
                       <ul className="pl-4 space-y-1">
                         {item.children.map((child) => (
-                          <li key={child.label}>
-                            <a
-                              href={child.href}
+                          <li key={child.labelKn}>
+                            <Link
+                              to={child.href}
                               className="block px-3 py-2 hover:bg-primary/20 transition-colors text-nav-foreground/80"
                             >
-                              {child.label}
-                            </a>
+                              {getLabel(child)}
+                            </Link>
                           </li>
                         ))}
                       </ul>
                     )}
                   </>
                 ) : (
-                  <a
-                    href={item.href}
+                  <Link
+                    to={item.href!}
                     className="block px-3 py-2.5 hover:bg-primary/20 transition-colors"
                   >
-                    {item.label}
-                  </a>
+                    {getLabel(item)}
+                  </Link>
                 )}
               </li>
             ))}
