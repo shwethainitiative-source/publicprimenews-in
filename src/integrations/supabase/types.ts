@@ -53,6 +53,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          description_en: string | null
           id: string
           is_breaking: boolean
           is_featured: boolean
@@ -60,6 +61,7 @@ export type Database = {
           tags: string[] | null
           thumbnail_url: string | null
           title: string
+          title_en: string | null
           updated_at: string
         }
         Insert: {
@@ -67,6 +69,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          description_en?: string | null
           id?: string
           is_breaking?: boolean
           is_featured?: boolean
@@ -74,6 +77,7 @@ export type Database = {
           tags?: string[] | null
           thumbnail_url?: string | null
           title: string
+          title_en?: string | null
           updated_at?: string
         }
         Update: {
@@ -81,6 +85,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          description_en?: string | null
           id?: string
           is_breaking?: boolean
           is_featured?: boolean
@@ -88,6 +93,7 @@ export type Database = {
           tags?: string[] | null
           thumbnail_url?: string | null
           title?: string
+          title_en?: string | null
           updated_at?: string
         }
         Relationships: [
