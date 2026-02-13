@@ -90,7 +90,7 @@ const HeroSection = () => {
             {sideCards.map((card) => (
               <article
                 key={card.id}
-                className="relative rounded-lg overflow-hidden group cursor-pointer h-[140px]"
+                className="relative rounded-lg overflow-hidden group cursor-pointer min-h-[120px]"
               >
                 <img
                   src={card.image}
@@ -118,7 +118,7 @@ const HeroSection = () => {
           </div>
 
           {/* Advertisement */}
-          <div className="bg-muted border border-border rounded-lg flex items-center justify-center h-14">
+          <div className="bg-muted border border-border rounded-lg flex items-center justify-center h-20">
             <span className="text-muted-foreground text-sm font-bold tracking-[0.3em] uppercase">
               Advertisement
             </span>
