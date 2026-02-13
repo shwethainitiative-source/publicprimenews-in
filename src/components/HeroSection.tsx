@@ -27,7 +27,7 @@ const latestNews = [
 const HeroSection = () => {
   return (
     <section className="container mx-auto px-4 py-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
         {/* LEFT COLUMN (2/3) — Big card + Latest News */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           {/* Big Featured News */}
@@ -85,8 +85,8 @@ const HeroSection = () => {
         </div>
 
         {/* RIGHT COLUMN (1/3) — 6 cards (2×3) + Ad */}
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-4 h-full">
+          <div className="grid grid-cols-2 gap-3 flex-1">
             {sideCards.map((card) => (
               <article
                 key={card.id}
