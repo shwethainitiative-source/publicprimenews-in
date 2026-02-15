@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Newspaper, Video, Quote, Image, FolderOpen,
-  Settings, LogOut, MessageSquare, X
+  Settings, LogOut, MessageSquare, X, Briefcase, Camera
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +13,9 @@ const navItems = [
   { to: "/admin/quotes", icon: Quote, label: "Manage Quotes" },
   { to: "/admin/ads", icon: Image, label: "Advertisements" },
   { to: "/admin/categories", icon: FolderOpen, label: "Categories" },
+  { to: "/admin/jobs", icon: Briefcase, label: "Manage Jobs" },
+  { to: "/admin/gallery", icon: Camera, label: "Manage Gallery" },
+  { to: "/admin/feedback", icon: MessageSquare, label: "Feedback" },
   { to: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 
