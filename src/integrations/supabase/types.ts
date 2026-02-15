@@ -127,6 +127,135 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          message: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      gallery_photos: {
+        Row: {
+          album: string | null
+          caption: string | null
+          caption_en: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          image_url: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          album?: string | null
+          caption?: string | null
+          caption_en?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          album?: string | null
+          caption?: string | null
+          caption_en?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      jobs: {
+        Row: {
+          apply_link: string | null
+          company_name: string
+          company_name_en: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          description_en: string | null
+          id: string
+          job_type: string | null
+          last_date: string | null
+          location: string | null
+          location_en: string | null
+          qualification: string | null
+          qualification_en: string | null
+          salary: string | null
+          salary_en: string | null
+          title: string
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          apply_link?: string | null
+          company_name?: string
+          company_name_en?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          description_en?: string | null
+          id?: string
+          job_type?: string | null
+          last_date?: string | null
+          location?: string | null
+          location_en?: string | null
+          qualification?: string | null
+          qualification_en?: string | null
+          salary?: string | null
+          salary_en?: string | null
+          title: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          apply_link?: string | null
+          company_name?: string
+          company_name_en?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          description_en?: string | null
+          id?: string
+          job_type?: string | null
+          last_date?: string | null
+          location?: string | null
+          location_en?: string | null
+          qualification?: string | null
+          qualification_en?: string | null
+          salary?: string | null
+          salary_en?: string | null
+          title?: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quotes: {
         Row: {
           author: string

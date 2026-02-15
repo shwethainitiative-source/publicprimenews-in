@@ -43,9 +43,9 @@ const menuItems: MenuItem[] = [
       { labelKn: "ನಮ್ಮೂರ ಹೆಮ್ಮೆಯ ಸಾಧಕರು", labelEn: "Local Achievers", href: "/category/local-achievers" },
     ],
   },
-  { labelKn: "ಉದ್ಯೋಗ ಮಾಹಿತಿ", labelEn: "Jobs", href: "/category/jobs" },
-  { labelKn: "ಫೋಟೊ ಗ್ಯಾಲರಿ", labelEn: "Photo Gallery", href: "/category/gallery" },
-  { labelKn: "ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ", labelEn: "Feedback", href: "/category/feedback" },
+  { labelKn: "ಉದ್ಯೋಗ ಮಾಹಿತಿ", labelEn: "Jobs", href: "/jobs" },
+  { labelKn: "ಫೋಟೊ ಗ್ಯಾಲರಿ", labelEn: "Photo Gallery", href: "/gallery" },
+  { labelKn: "ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ", labelEn: "Feedback", href: "/feedback" },
 ];
 
 const NavigationBar = () => {
