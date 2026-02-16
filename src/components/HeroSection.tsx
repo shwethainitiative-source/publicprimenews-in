@@ -116,7 +116,7 @@ const HeroSection = () => {
                     <img
                       src={news.thumbnail_url || "/placeholder.svg"}
                       alt={t(news.title, news.title_en)}
-                      className="w-24 h-18 rounded object-cover flex-shrink-0"
+                      className="w-24 h-[72px] rounded object-cover flex-shrink-0"
                       loading="lazy"
                     />
                     <div className="flex-1 min-w-0">
@@ -145,7 +145,7 @@ const HeroSection = () => {
           <div className="grid grid-cols-2 gap-3 flex-1">
             {sideCards.length > 0 ? sideCards.map((card) => (
               <Link to={`/article/${card.id}`} key={card.id}>
-                <article className="relative rounded-lg overflow-hidden group cursor-pointer min-h-[160px]">
+                <article className="relative rounded-lg overflow-hidden group cursor-pointer min-h-[160px] h-full">
                   <img
                     src={card.thumbnail_url || "/placeholder.svg"}
                     alt={t(card.title, card.title_en)}
