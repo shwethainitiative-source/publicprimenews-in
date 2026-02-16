@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Send } from "lucide-react";
+import AdSlider from "@/components/AdSlider";
 
 interface Category {
   id: string;
@@ -145,132 +146,86 @@ const WriteForUsPage = () => {
           <div className="flex-1 h-0.5 bg-primary" />
         </div>
 
-        {/* Intro */}
-        <div className="bg-card rounded-lg shadow-sm p-5 mb-6">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {language === "kn"
-              ? "ನಿಮ್ಮ ಲೇಖನಗಳನ್ನು ನಮಗೆ ಕಳುಹಿಸಿ. ಅಡ್ಮಿನ್ ಅನುಮೋದನೆಯ ನಂತರ ನಿಮ್ಮ ಬರಹ ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಪ್ರಕಟವಾಗುತ್ತದೆ. ಎಲ್ಲಾ ಅಗತ್ಯ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ."
-              : "Submit your articles to us. After admin approval, your writing will be published on our website. Please fill in all required fields."}
-          </p>
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <div className="flex-1 min-w-0">
+            {/* Intro */}
+            <div className="bg-card rounded-lg shadow-sm p-5 mb-6">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {language === "kn"
+                  ? "ನಿಮ್ಮ ಲೇಖನಗಳನ್ನು ನಮಗೆ ಕಳುಹಿಸಿ. ಅಡ್ಮಿನ್ ಅನುಮೋದನೆಯ ನಂತರ ನಿಮ್ಮ ಬರಹ ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಪ್ರಕಟವಾಗುತ್ತದೆ. ಎಲ್ಲಾ ಅಗತ್ಯ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ."
+                  : "Submit your articles to us. After admin approval, your writing will be published on our website. Please fill in all required fields."}
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="bg-card rounded-lg shadow-sm p-5 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name">{language === "kn" ? "ಹೆಸರು *" : "Name *"}</Label>
+                  <Input id="name" value={form.name} onChange={(e) => handleChange("name", e.target.value)} placeholder={language === "kn" ? "ನಿಮ್ಮ ಹೆಸರು" : "Your name"} maxLength={100} required />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">{language === "kn" ? "ಇಮೇಲ್ *" : "Email *"}</Label>
+                  <Input id="email" type="email" value={form.email} onChange={(e) => handleChange("email", e.target.value)} placeholder={language === "kn" ? "ನಿಮ್ಮ ಇಮೇಲ್" : "Your email"} maxLength={255} required />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="phone">{language === "kn" ? "ಫೋನ್" : "Phone"}</Label>
+                  <Input id="phone" value={form.phone} onChange={(e) => handleChange("phone", e.target.value)} placeholder={language === "kn" ? "ಫೋನ್ ನಂಬರ್" : "Phone number"} maxLength={20} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="category">{language === "kn" ? "ವರ್ಗ" : "Category"}</Label>
+                  <Select value={form.category_id} onValueChange={(v) => handleChange("category_id", v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={language === "kn" ? "ವರ್ಗ ಆಯ್ಕೆಮಾಡಿ" : "Select category"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="article_title">{language === "kn" ? "ಲೇಖನ ಶೀರ್ಷಿಕೆ *" : "Article Title *"}</Label>
+                <Input id="article_title" value={form.article_title} onChange={(e) => handleChange("article_title", e.target.value)} placeholder={language === "kn" ? "ನಿಮ್ಮ ಲೇಖನದ ಶೀರ್ಷಿಕೆ" : "Title of your article"} maxLength={200} required />
+              </div>
+
+              {/* Image Upload */}
+              <div className="space-y-1.5">
+                <Label>{language === "kn" ? "ಚಿತ್ರ ಅಪ್‌ಲೋಡ್" : "Upload Image"}</Label>
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 px-4 py-2.5 rounded-md border border-border bg-muted text-sm cursor-pointer hover:bg-muted/80 transition-colors">
+                    <Upload className="w-4 h-4" />
+                    {language === "kn" ? "ಚಿತ್ರ ಆಯ್ಕೆಮಾಡಿ" : "Choose Image"}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                  </label>
+                  {imageFile && <span className="text-xs text-muted-foreground truncate max-w-[200px]">{imageFile.name}</span>}
+                </div>
+                {imagePreview && <img src={imagePreview} alt="Preview" className="mt-2 w-40 h-28 rounded-md object-cover border border-border" />}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="content">{language === "kn" ? "ಲೇಖನದ ವಿಷಯ *" : "Article Content *"}</Label>
+                <Textarea id="content" value={form.content} onChange={(e) => handleChange("content", e.target.value)} placeholder={language === "kn" ? "ನಿಮ್ಮ ಲೇಖನವನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ..." : "Write your article here..."} rows={8} maxLength={10000} required />
+              </div>
+
+              <Button type="submit" disabled={submitting} className="gap-2">
+                <Send className="w-4 h-4" />
+                {submitting ? (language === "kn" ? "ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ..." : "Submitting...") : (language === "kn" ? "ಲೇಖನ ಸಲ್ಲಿಸಿ" : "Submit Article")}
+              </Button>
+            </form>
+          </div>
+
+          {/* Right: Ad Slider */}
+          <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
+            <AdSlider showHeading={false} position="sidebar" />
+          </div>
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-card rounded-lg shadow-sm p-5 space-y-5 max-w-2xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">{language === "kn" ? "ಹೆಸರು *" : "Name *"}</Label>
-              <Input
-                id="name"
-                value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                placeholder={language === "kn" ? "ನಿಮ್ಮ ಹೆಸರು" : "Your name"}
-                maxLength={100}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="email">{language === "kn" ? "ಇಮೇಲ್ *" : "Email *"}</Label>
-              <Input
-                id="email"
-                type="email"
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                placeholder={language === "kn" ? "ನಿಮ್ಮ ಇಮೇಲ್" : "Your email"}
-                maxLength={255}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="phone">{language === "kn" ? "ಫೋನ್" : "Phone"}</Label>
-              <Input
-                id="phone"
-                value={form.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                placeholder={language === "kn" ? "ಫೋನ್ ನಂಬರ್" : "Phone number"}
-                maxLength={20}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="category">{language === "kn" ? "ವರ್ಗ" : "Category"}</Label>
-              <Select value={form.category_id} onValueChange={(v) => handleChange("category_id", v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder={language === "kn" ? "ವರ್ಗ ಆಯ್ಕೆಮಾಡಿ" : "Select category"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="article_title">{language === "kn" ? "ಲೇಖನ ಶೀರ್ಷಿಕೆ *" : "Article Title *"}</Label>
-            <Input
-              id="article_title"
-              value={form.article_title}
-              onChange={(e) => handleChange("article_title", e.target.value)}
-              placeholder={language === "kn" ? "ನಿಮ್ಮ ಲೇಖನದ ಶೀರ್ಷಿಕೆ" : "Title of your article"}
-              maxLength={200}
-              required
-            />
-          </div>
-
-          {/* Image Upload */}
-          <div className="space-y-1.5">
-            <Label>{language === "kn" ? "ಚಿತ್ರ ಅಪ್‌ಲೋಡ್" : "Upload Image"}</Label>
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 px-4 py-2.5 rounded-md border border-border bg-muted text-sm cursor-pointer hover:bg-muted/80 transition-colors">
-                <Upload className="w-4 h-4" />
-                {language === "kn" ? "ಚಿತ್ರ ಆಯ್ಕೆಮಾಡಿ" : "Choose Image"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageChange}
-                />
-              </label>
-              {imageFile && (
-                <span className="text-xs text-muted-foreground truncate max-w-[200px]">
-                  {imageFile.name}
-                </span>
-              )}
-            </div>
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="mt-2 w-40 h-28 rounded-md object-cover border border-border"
-              />
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="content">{language === "kn" ? "ಲೇಖನದ ವಿಷಯ *" : "Article Content *"}</Label>
-            <Textarea
-              id="content"
-              value={form.content}
-              onChange={(e) => handleChange("content", e.target.value)}
-              placeholder={language === "kn" ? "ನಿಮ್ಮ ಲೇಖನವನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ..." : "Write your article here..."}
-              rows={8}
-              maxLength={10000}
-              required
-            />
-          </div>
-
-          <Button type="submit" disabled={submitting} className="gap-2">
-            <Send className="w-4 h-4" />
-            {submitting
-              ? language === "kn" ? "ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ..." : "Submitting..."
-              : language === "kn" ? "ಲೇಖನ ಸಲ್ಲಿಸಿ" : "Submit Article"}
-          </Button>
-        </form>
       </main>
       <Footer />
     </div>
