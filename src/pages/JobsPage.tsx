@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderBar from "@/components/HeaderBar";
 import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
+import AdSlider from "@/components/AdSlider";
 import { Briefcase, MapPin, GraduationCap, Calendar, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -106,73 +107,83 @@ const JobsPage = () => {
           </select>
         </div>
 
-        {loading ? (
-          <div className="text-center py-16 text-muted-foreground">
-            {language === "kn" ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading..."}
-          </div>
-        ) : jobs.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            {language === "kn" ? "ಉದ್ಯೋಗಗಳು ಲಭ್ಯವಿಲ್ಲ" : "No jobs found"}
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {jobs.map(job => (
-              <div key={job.id} className="bg-card rounded-lg border border-border p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-card-foreground">
-                      {t(job.title, job.title_en)}
-                    </h3>
-                    <p className="text-sm font-medium text-primary mt-1">
-                      {t(job.company_name, job.company_name_en)}
-                    </p>
-                    <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
-                      {job.location && (
-                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {t(job.location, job.location_en)}</span>
-                      )}
-                      {job.qualification && (
-                        <span className="flex items-center gap-1"><GraduationCap className="w-3.5 h-3.5" /> {t(job.qualification, job.qualification_en)}</span>
-                      )}
-                      {job.salary && (
-                        <span className="font-medium text-foreground">₹ {t(job.salary, job.salary_en)}</span>
-                      )}
-                      {job.last_date && (
-                        <span className="flex items-center gap-1 text-destructive"><Calendar className="w-3.5 h-3.5" /> {language === "kn" ? "ಕೊನೆಯ ದಿನಾಂಕ:" : "Last date:"} {new Date(job.last_date).toLocaleDateString()}</span>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left: Job Listings */}
+          <div className="flex-1 min-w-0">
+            {loading ? (
+              <div className="text-center py-16 text-muted-foreground">
+                {language === "kn" ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading..."}
+              </div>
+            ) : jobs.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground">
+                {language === "kn" ? "ಉದ್ಯೋಗಗಳು ಲಭ್ಯವಿಲ್ಲ" : "No jobs found"}
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {jobs.map(job => (
+                  <div key={job.id} className="bg-card rounded-lg border border-border p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg text-card-foreground">
+                          {t(job.title, job.title_en)}
+                        </h3>
+                        <p className="text-sm font-medium text-primary mt-1">
+                          {t(job.company_name, job.company_name_en)}
+                        </p>
+                        <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
+                          {job.location && (
+                            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {t(job.location, job.location_en)}</span>
+                          )}
+                          {job.qualification && (
+                            <span className="flex items-center gap-1"><GraduationCap className="w-3.5 h-3.5" /> {t(job.qualification, job.qualification_en)}</span>
+                          )}
+                          {job.salary && (
+                            <span className="font-medium text-foreground">₹ {t(job.salary, job.salary_en)}</span>
+                          )}
+                          {job.last_date && (
+                            <span className="flex items-center gap-1 text-destructive"><Calendar className="w-3.5 h-3.5" /> {language === "kn" ? "ಕೊನೆಯ ದಿನಾಂಕ:" : "Last date:"} {new Date(job.last_date).toLocaleDateString()}</span>
+                          )}
+                        </div>
+                        {(job.description || job.description_en) && (
+                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{t(job.description, job.description_en)}</p>
+                        )}
+                      </div>
+                      {job.apply_link && (
+                        <a href={job.apply_link} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" className="whitespace-nowrap">
+                            <ExternalLink className="w-3.5 h-3.5 mr-1" />
+                            {language === "kn" ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Apply"}
+                          </Button>
+                        </a>
                       )}
                     </div>
-                    {(job.description || job.description_en) && (
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{t(job.description, job.description_en)}</p>
-                    )}
                   </div>
-                  {job.apply_link && (
-                    <a href={job.apply_link} target="_blank" rel="noopener noreferrer">
-                      <Button size="sm" className="whitespace-nowrap">
-                        <ExternalLink className="w-3.5 h-3.5 mr-1" />
-                        {language === "kn" ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Apply"}
-                      </Button>
-                    </a>
-                  )}
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {totalPages > 1 && (
-          <div className="mt-6">
-            <Pagination>
-              <PaginationContent>
-                {page > 1 && <PaginationItem><PaginationPrevious href="#" onClick={e => { e.preventDefault(); setPage(page - 1); }} /></PaginationItem>}
-                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
-                  .map(p => (
-                    <PaginationItem key={p}><PaginationLink href="#" isActive={p === page} onClick={e => { e.preventDefault(); setPage(p); }}>{p}</PaginationLink></PaginationItem>
-                  ))}
-                {page < totalPages && <PaginationItem><PaginationNext href="#" onClick={e => { e.preventDefault(); setPage(page + 1); }} /></PaginationItem>}
-              </PaginationContent>
-            </Pagination>
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination>
+                  <PaginationContent>
+                    {page > 1 && <PaginationItem><PaginationPrevious href="#" onClick={e => { e.preventDefault(); setPage(page - 1); }} /></PaginationItem>}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
+                      .map(p => (
+                        <PaginationItem key={p}><PaginationLink href="#" isActive={p === page} onClick={e => { e.preventDefault(); setPage(p); }}>{p}</PaginationLink></PaginationItem>
+                      ))}
+                    {page < totalPages && <PaginationItem><PaginationNext href="#" onClick={e => { e.preventDefault(); setPage(page + 1); }} /></PaginationItem>}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right: Ad Sidebar */}
+          <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
+            <AdSlider showHeading={false} position="sidebar" />
+          </div>
+        </div>
       </main>
       <Footer />
     </div>

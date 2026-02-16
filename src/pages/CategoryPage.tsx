@@ -5,6 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderBar from "@/components/HeaderBar";
 import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
+import AdSlider from "@/components/AdSlider";
 import { Clock } from "lucide-react";
 import {
   Pagination, PaginationContent, PaginationItem,
@@ -53,7 +54,7 @@ const CategoryPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language, t } = useLanguage();
   const [articles, setArticles] = useState<Article[]>([]);
-  const [ads, setAds] = useState<Ad[]>([]);
+  const [inlineAds, setInlineAds] = useState<Ad[]>([]);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -65,8 +66,8 @@ const CategoryPage = () => {
 
   useEffect(() => {
     supabase.from("advertisements").select("id, image_url, redirect_link")
-      .eq("is_enabled", true).eq("position", "sidebar")
-      .then(({ data }) => setAds(data ?? []));
+      .eq("is_enabled", true).eq("position", "below_news")
+      .then(({ data }) => setInlineAds(data ?? []));
   }, []);
 
   useEffect(() => {
@@ -142,9 +143,9 @@ const CategoryPage = () => {
     return language === "kn" ? `${days} ದಿನಗಳ ಹಿಂದೆ` : `${days}d ago`;
   };
 
-  const renderAd = () => {
-    if (ads.length === 0) return null;
-    const ad = ads[Math.floor(Math.random() * ads.length)];
+  const renderInlineAd = () => {
+    if (inlineAds.length === 0) return null;
+    const ad = inlineAds[Math.floor(Math.random() * inlineAds.length)];
     return (
       <div className="my-4 rounded-lg overflow-hidden border border-border">
         <div className="bg-muted text-muted-foreground text-center text-[10px] font-bold py-1 uppercase tracking-widest">
@@ -167,102 +168,110 @@ const CategoryPage = () => {
           <div className="flex-1 h-0.5 bg-primary" />
         </div>
 
-        {loading ? (
-          <div className="text-center py-16 text-muted-foreground">
-            {language === "kn" ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading..."}
-          </div>
-        ) : articles.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            {language === "kn" ? "ಸುದ್ದಿಗಳು ಲಭ್ಯವಿಲ್ಲ" : "No articles found"}
-          </div>
-        ) : (
-          <div>
-            {/* Featured Big Card */}
-            {featured && (
-              <article className="rounded-lg overflow-hidden bg-card shadow-md mb-6 cursor-pointer group">
-                <img
-                  src={featured.thumbnail_url || "/placeholder.svg"}
-                  alt=""
-                  className="w-full h-[220px] md:h-[360px] object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="p-4">
-                  <h2 className="text-xl md:text-2xl font-extrabold leading-tight text-card-foreground group-hover:text-primary transition-colors">
-                    {t(featured.title, featured.title_en)}
-                  </h2>
-                  {(featured.description || featured.description_en) && (
-                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                      {t(featured.description, featured.description_en)}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-1.5 mt-2 text-muted-foreground text-xs">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{formatTime(featured.created_at)}</span>
-                  </div>
-                </div>
-              </article>
-            )}
-
-            {/* News List with inline ads */}
-            <div className="space-y-0 divide-y divide-border bg-card rounded-lg shadow-sm">
-              {listArticles.map((article, idx) => (
-                <div key={article.id}>
-                  <article className="flex gap-4 p-4 cursor-pointer group hover:bg-muted/50 transition-colors">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left: News Content */}
+          <div className="flex-1 min-w-0">
+            {loading ? (
+              <div className="text-center py-16 text-muted-foreground">
+                {language === "kn" ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading..."}
+              </div>
+            ) : articles.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground">
+                {language === "kn" ? "ಸುದ್ದಿಗಳು ಲಭ್ಯವಿಲ್ಲ" : "No articles found"}
+              </div>
+            ) : (
+              <div>
+                {featured && (
+                  <article className="rounded-lg overflow-hidden bg-card shadow-md mb-6 cursor-pointer group">
                     <img
-                      src={article.thumbnail_url || "/placeholder.svg"}
+                      src={featured.thumbnail_url || "/placeholder.svg"}
                       alt=""
-                      className="w-28 h-20 md:w-36 md:h-24 rounded object-cover flex-shrink-0"
+                      className="w-full h-[220px] md:h-[360px] object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-base leading-snug line-clamp-2 text-card-foreground group-hover:text-primary transition-colors">
-                        {t(article.title, article.title_en)}
-                      </h3>
-                      {(article.description || article.description_en) && (
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {t(article.description, article.description_en)}
+                    <div className="p-4">
+                      <h2 className="text-xl md:text-2xl font-extrabold leading-tight text-card-foreground group-hover:text-primary transition-colors">
+                        {t(featured.title, featured.title_en)}
+                      </h2>
+                      {(featured.description || featured.description_en) && (
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                          {t(featured.description, featured.description_en)}
                         </p>
                       )}
                       <div className="flex items-center gap-1.5 mt-2 text-muted-foreground text-xs">
                         <Clock className="w-3.5 h-3.5" />
-                        <span>{formatTime(article.created_at)}</span>
+                        <span>{formatTime(featured.created_at)}</span>
                       </div>
                     </div>
                   </article>
-                  {(idx + 1) % 4 === 0 && renderAd()}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                )}
 
-        {totalPages > 1 && (
-          <div className="mt-6">
-            <Pagination>
-              <PaginationContent>
-                {page > 1 && (
-                  <PaginationItem>
-                    <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage(page - 1); }} />
-                  </PaginationItem>
-                )}
-                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
-                  .map((p) => (
-                    <PaginationItem key={p}>
-                      <PaginationLink href="#" isActive={p === page} onClick={(e) => { e.preventDefault(); setPage(p); }}>
-                        {p}
-                      </PaginationLink>
-                    </PaginationItem>
+                <div className="space-y-0 divide-y divide-border bg-card rounded-lg shadow-sm">
+                  {listArticles.map((article, idx) => (
+                    <div key={article.id}>
+                      <article className="flex gap-4 p-4 cursor-pointer group hover:bg-muted/50 transition-colors">
+                        <img
+                          src={article.thumbnail_url || "/placeholder.svg"}
+                          alt=""
+                          className="w-28 h-20 md:w-36 md:h-24 rounded object-cover flex-shrink-0"
+                          loading="lazy"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-base leading-snug line-clamp-2 text-card-foreground group-hover:text-primary transition-colors">
+                            {t(article.title, article.title_en)}
+                          </h3>
+                          {(article.description || article.description_en) && (
+                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                              {t(article.description, article.description_en)}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-1.5 mt-2 text-muted-foreground text-xs">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{formatTime(article.created_at)}</span>
+                          </div>
+                        </div>
+                      </article>
+                      {(idx + 1) % 4 === 0 && renderInlineAd()}
+                    </div>
                   ))}
-                {page < totalPages && (
-                  <PaginationItem>
-                    <PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage(page + 1); }} />
-                  </PaginationItem>
-                )}
-              </PaginationContent>
-            </Pagination>
+                </div>
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination>
+                  <PaginationContent>
+                    {page > 1 && (
+                      <PaginationItem>
+                        <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage(page - 1); }} />
+                      </PaginationItem>
+                    )}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
+                      .map((p) => (
+                        <PaginationItem key={p}>
+                          <PaginationLink href="#" isActive={p === page} onClick={(e) => { e.preventDefault(); setPage(p); }}>
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                    {page < totalPages && (
+                      <PaginationItem>
+                        <PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage(page + 1); }} />
+                      </PaginationItem>
+                    )}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right: Ad Sidebar */}
+          <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
+            <AdSlider showHeading={false} position="sidebar" />
+          </div>
+        </div>
       </main>
       <Footer />
     </div>

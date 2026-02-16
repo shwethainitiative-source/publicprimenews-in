@@ -110,7 +110,7 @@ const About = () => {
 
           {/* Right: Ad Slider */}
           <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
-            <AdSlider />
+            <AdSlider showHeading={false} position="about" />
           </div>
         </div>
       </main>
