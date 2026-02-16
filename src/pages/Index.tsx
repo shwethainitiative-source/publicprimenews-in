@@ -1,6 +1,7 @@
 import HeaderBar from "@/components/HeaderBar";
 import NavigationBar from "@/components/NavigationBar";
 import BreakingNewsTicker from "@/components/BreakingNewsTicker";
+import QuoteLine from "@/components/QuoteLine";
 import SponsoredBanner from "@/components/SponsoredBanner";
 import HeroSection from "@/components/HeroSection";
 import SpecialSections from "@/components/SpecialSections";
@@ -12,6 +13,7 @@ const Index = () => {
       <HeaderBar />
       <NavigationBar />
       <BreakingNewsTicker />
+      <QuoteLine />
       <SponsoredBanner />
 
       {/* Hero Section */}
