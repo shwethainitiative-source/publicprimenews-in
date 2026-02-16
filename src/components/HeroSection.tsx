@@ -15,6 +15,7 @@ interface Article {
   created_at: string;
   is_featured: boolean;
   category_id: string | null;
+  article_type?: string;
   categories?: { name: string } | null;
 }
 
@@ -29,7 +30,7 @@ const HeroSection = () => {
       // Fetch 1 featured article
       const { data: featuredData } = await supabase
         .from("articles")
-        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, categories(name)")
+        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, categories(name)")
         .eq("is_featured", true)
         .order("created_at", { ascending: false })
         .limit(1);
@@ -77,7 +78,13 @@ const HeroSection = () => {
           {/* Big Featured News */}
           {featured ? (
             <Link to={`/article/${featured.id}`}>
-              <article className="rounded-lg overflow-hidden group cursor-pointer bg-card shadow-md">
+              <article className="rounded-lg overflow-hidden group cursor-pointer bg-card shadow-md relative">
+                {(featured.article_type === "live" || featured.article_type === "podcast") && (
+                  <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 bg-green-600 px-3 py-1 rounded text-white text-xs font-bold uppercase">
+                    {featured.article_type === "live" ? "LIVE" : "PODCAST"}
+                    {featured.article_type === "live" && <span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
+                  </div>
+                )}
                 <img
                   src={featured.thumbnail_url || "/placeholder.svg"}
                   alt={t(featured.title, featured.title_en)}

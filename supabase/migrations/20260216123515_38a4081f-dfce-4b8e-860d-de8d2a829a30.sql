@@ -1,0 +1,1 @@
+ALTER TABLE public.articles ADD COLUMN article_type text NOT NULL DEFAULT 'normal';
