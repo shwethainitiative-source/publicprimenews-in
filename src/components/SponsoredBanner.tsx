@@ -33,7 +33,10 @@ const SponsoredBanner = () => {
   const ad = ads[current];
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => clearInterval(undefined)}
+    >
       <div className="absolute top-2 left-2 bg-sponsored text-sponsored-foreground text-xs font-bold px-3 py-1 rounded z-10">
         Sponsored
       </div>
@@ -41,7 +44,7 @@ const SponsoredBanner = () => {
         <img
           src={ad.image_url}
           alt="Sponsored advertisement"
-          className="w-full h-auto max-h-36 object-cover"
+          className="w-full h-auto max-h-56 object-cover"
           loading="lazy"
         />
       </a>
