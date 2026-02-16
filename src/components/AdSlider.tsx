@@ -52,7 +52,7 @@ const AdSlider = ({ showHeading = true, position = "sidebar" }: AdSliderProps) =
           ಜಾಹೀರಾತು (Advertisement)
         </div>
       )}
-      <div className="relative w-full aspect-[3/4] overflow-hidden">
+      <div className="relative w-full aspect-[16/5] overflow-hidden">
         {ads.map((ad, i) => (
           <a
             key={ad.id}

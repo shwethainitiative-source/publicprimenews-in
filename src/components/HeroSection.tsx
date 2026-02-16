@@ -46,12 +46,12 @@ const HeroSection = () => {
 
       setSideCards((sideData as Article[]) ?? []);
 
-      // Fetch 4 latest news
+      // Fetch 5 latest news
       const { data: latestData } = await supabase
         .from("articles")
         .select("id, title, title_en, thumbnail_url, created_at, category_id, categories(name)")
         .order("created_at", { ascending: false })
-        .limit(4);
+        .limit(5);
 
       setLatestNews((latestData as Article[]) ?? []);
     };
@@ -145,7 +145,7 @@ const HeroSection = () => {
           <div className="grid grid-cols-2 gap-3 flex-1">
             {sideCards.length > 0 ? sideCards.map((card) => (
               <Link to={`/article/${card.id}`} key={card.id}>
-                <article className="relative rounded-lg overflow-hidden group cursor-pointer min-h-[120px]">
+                <article className="relative rounded-lg overflow-hidden group cursor-pointer min-h-[160px]">
                   <img
                     src={card.thumbnail_url || "/placeholder.svg"}
                     alt={t(card.title, card.title_en)}
@@ -170,7 +170,7 @@ const HeroSection = () => {
                 </article>
               </Link>
             )) : Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="relative rounded-lg overflow-hidden bg-muted min-h-[120px] flex items-center justify-center">
+              <div key={i} className="relative rounded-lg overflow-hidden bg-muted min-h-[160px] flex items-center justify-center">
                 <span className="text-muted-foreground text-xs">{language === "kn" ? "ಸುದ್ದಿ" : "News"}</span>
               </div>
             ))}
