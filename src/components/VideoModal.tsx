@@ -8,7 +8,8 @@ import {
 interface VideoModalProps {
   video: {
     title: string;
-    youtubeUrl: string;
+    youtubeUrl?: string;
+    youtube_url?: string;
   } | null;
   onClose: () => void;
 }
@@ -31,7 +32,7 @@ const VideoModal = ({ video, onClose }: VideoModalProps) => {
         </DialogHeader>
         <div className="aspect-video w-full">
           <iframe
-            src={getYoutubeEmbedUrl(video.youtubeUrl)}
+            src={getYoutubeEmbedUrl(video.youtubeUrl || video.youtube_url || "")}
             title={video.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

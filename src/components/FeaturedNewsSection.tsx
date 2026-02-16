@@ -1,7 +1,10 @@
-import { useState } from "react";
-import { Clock, Eye } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Clock, Eye, Radio, Headphones, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Dialog,
   DialogContent,
@@ -9,141 +12,157 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const featuredNews = [
-  {
-    id: 1,
-    title: "ಸಮುದ್ರದ ದೃಶ್ಯ ಆನಂದಮಯ, ಆದರೆ ದಡದ ಮೇಲಿಂದ ನೋಡುವವರಿಗೇ ಹೊರತು ಮುಳುಗುವವರಿಗಲ್ಲ. - ವಿನೋಬಾ ಬಾವೆ",
-    image: "/placeholder.svg",
-    time: "4h ago",
-  },
-  {
-    id: 2,
-    title: "ಕರ್ನಾಟಕದಲ್ಲಿ ಹೊಸ ಶಿಕ್ಷಣ ನೀತಿ ಜಾರಿಗೆ ಸರ್ಕಾರ ಸಿದ್ಧತೆ ನಡೆಸುತ್ತಿದೆ",
-    image: "/placeholder.svg",
-    time: "4h ago",
-  },
-  {
-    id: 3,
-    title: "ಉಡುಪಿ ಜಿಲ್ಲೆಯಲ್ಲಿ ಭಾರೀ ಮಳೆ ಸಾಧ್ಯತೆ, ಜನರಿಗೆ ಎಚ್ಚರಿಕೆ ನೀಡಲಾಗಿದೆ",
-    image: "/placeholder.svg",
-    time: "4h ago",
-  },
-];
+interface Article {
+  id: string;
+  title: string;
+  title_en: string | null;
+  thumbnail_url: string | null;
+  created_at: string;
+  categories?: { name: string } | null;
+}
 
-const galleryImages = [
-  { id: 1, title: "xxxxxxxxxx xxxxxxxx", image: "/placeholder.svg" },
-  { id: 2, title: "xxxxxxxxxx xxxxxxxx", image: "/placeholder.svg" },
-  { id: 3, title: "xxxxxxxxxx xxxxxxxx", image: "/placeholder.svg" },
-  { id: 4, title: "xxxxxxxxxx xxxxxxxx", image: "/placeholder.svg" },
-];
+interface GalleryPhoto {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  caption_en: string | null;
+}
 
-const latestNews = [
-  {
-    id: 1,
-    title: "ಸಮುದ್ರದ ದೃಶ್ಯ ಆನಂದಮಯ, ಆದರೆ ದಡದ ಮೇಲಿಂದ ನೋಡುವವರಿಗೇ ಹೊರತು ಮುಳುಗುವವರಿಗಲ್ಲ. - ವಿನೋಬಾ ಬಾವೆ",
-    image: "/placeholder.svg",
-    time: "4h ago",
-  },
-  {
-    id: 2,
-    title: "ಕರ್ನಾಟಕದಲ್ಲಿ ಹೊಸ ಶಿಕ್ಷಣ ನೀತಿ ಜಾರಿ",
-    image: "/placeholder.svg",
-    time: "5h ago",
-  },
-  {
-    id: 3,
-    title: "ಉಡುಪಿಯಲ್ಲಿ ಸಾಂಸ್ಕೃತಿಕ ಕಾರ್ಯಕ್ರಮ ಆಯೋಜನೆ",
-    image: "/placeholder.svg",
-    time: "6h ago",
-  },
-  {
-    id: 4,
-    title: "ರಾಜ್ಯದಲ್ಲಿ ಹೊಸ ಯೋಜನೆ ಘೋಷಣೆ",
-    image: "/placeholder.svg",
-    time: "7h ago",
-  },
-  {
-    id: 5,
-    title: "ಮಂಗಳೂರು ವಿಮಾನ ನಿಲ್ದಾಣ ಅಭಿವೃದ್ಧಿ ಕಾಮಗಾರಿ",
-    image: "/placeholder.svg",
-    time: "8h ago",
-  },
-];
+interface Video {
+  id: string;
+  title: string;
+  thumbnail_url: string | null;
+  youtube_url: string;
+  video_type: string;
+}
 
 const FeaturedNewsSection = () => {
+  const { language, t } = useLanguage();
+  const [featuredNews, setFeaturedNews] = useState<Article[]>([]);
+  const [gallery, setGallery] = useState<GalleryPhoto[]>([]);
+  const [latestNews, setLatestNews] = useState<Article[]>([]);
   const [lightboxImage, setLightboxImage] = useState<{ title: string; image: string } | null>(null);
+
+  useEffect(() => {
+    // Fetch featured articles (is_featured)
+    supabase
+      .from("articles")
+      .select("id, title, title_en, thumbnail_url, created_at, categories(name)")
+      .eq("is_featured", true)
+      .order("created_at", { ascending: false })
+      .limit(3)
+      .then(({ data }) => setFeaturedNews((data as Article[]) ?? []));
+
+    // Fetch gallery photos
+    supabase
+      .from("gallery_photos")
+      .select("id, image_url, caption, caption_en")
+      .order("sort_order")
+      .limit(4)
+      .then(({ data }) => setGallery(data ?? []));
+
+    // Fetch latest articles for right column
+    supabase
+      .from("articles")
+      .select("id, title, title_en, thumbnail_url, created_at, categories(name)")
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => setLatestNews((data as Article[]) ?? []));
+  }, []);
+
+  const formatTime = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return language === "kn" ? `${mins} ನಿಮಿಷಗಳ ಹಿಂದೆ` : `${mins} min ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return language === "kn" ? `${hours} ಗಂಟೆ ಹಿಂದೆ` : `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return language === "kn" ? `${days} ದಿನಗಳ ಹಿಂದೆ` : `${days}d ago`;
+  };
 
   return (
     <section className="container mx-auto px-4 py-8">
-      {/* Featured News Title */}
       <div className="flex items-center gap-4 mb-6">
-        <h2 className="text-2xl font-extrabold whitespace-nowrap">Featured News</h2>
+        <h2 className="text-2xl font-extrabold whitespace-nowrap">
+          {language === "kn" ? "ವಿಶೇಷ ಸುದ್ದಿ" : "Featured News"}
+        </h2>
         <Separator className="flex-1" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Left - Featured Cards + Gallery (3 cols) */}
         <div className="lg:col-span-3 space-y-8">
-          {/* 3 Featured Cards */}
+          {/* Featured Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {featuredNews.map((news) => (
-              <article
-                key={news.id}
-                className="group cursor-pointer rounded-lg overflow-hidden border border-border bg-card hover:shadow-md transition-shadow"
-              >
-                <div className="relative">
-                  <img
-                    src={news.image}
-                    alt={news.title}
-                    className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <Badge className="absolute top-2 left-2 bg-secondary text-secondary-foreground text-[10px] font-bold rounded">
-                    Featured
-                  </Badge>
-                </div>
-                <div className="p-3">
-                  <h3 className="text-sm font-bold leading-snug line-clamp-3 text-card-foreground">
-                    {news.title}
-                  </h3>
-                  <div className="flex items-center gap-1 mt-2 text-muted-foreground text-xs">
-                    <Clock className="w-3 h-3" />
-                    <span>{news.time}</span>
+            {featuredNews.length > 0 ? featuredNews.map((news) => (
+              <Link to={`/article/${news.id}`} key={news.id}>
+                <article className="group cursor-pointer rounded-lg overflow-hidden border border-border bg-card hover:shadow-md transition-shadow">
+                  <div className="relative">
+                    <img
+                      src={news.thumbnail_url || "/placeholder.svg"}
+                      alt={t(news.title, news.title_en)}
+                      className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                    <Badge className="absolute top-2 left-2 bg-secondary text-secondary-foreground text-[10px] font-bold rounded">
+                      {language === "kn" ? "ವಿಶೇಷ" : "Featured"}
+                    </Badge>
                   </div>
-                </div>
-              </article>
+                  <div className="p-3">
+                    <h3 className="text-sm font-bold leading-snug line-clamp-3 text-card-foreground">
+                      {t(news.title, news.title_en)}
+                    </h3>
+                    <div className="flex items-center gap-1 mt-2 text-muted-foreground text-xs">
+                      <Clock className="w-3 h-3" />
+                      <span>{formatTime(news.created_at)}</span>
+                    </div>
+                  </div>
+                </article>
+              </Link>
+            )) : Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="rounded-lg border border-border bg-card h-64 flex items-center justify-center">
+                <span className="text-muted-foreground text-sm">{language === "kn" ? "ಸುದ್ದಿ ಲಭ್ಯವಿಲ್ಲ" : "No news"}</span>
+              </div>
             ))}
           </div>
 
           {/* Photo Gallery */}
           <div>
             <div className="flex items-center gap-4 mb-4">
-              <h2 className="text-xl font-extrabold whitespace-nowrap">ಫೋಟೊ ಗ್ಯಾಲರಿ</h2>
+              <h2 className="text-xl font-extrabold whitespace-nowrap">
+                {language === "kn" ? "ಫೋಟೊ ಗ್ಯಾಲರಿ" : "Photo Gallery"}
+              </h2>
               <Separator className="flex-1" />
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {galleryImages.map((img) => (
+              {gallery.map((img) => (
                 <div
                   key={img.id}
                   className="cursor-pointer group"
-                  onClick={() => setLightboxImage(img)}
+                  onClick={() => setLightboxImage({ title: t(img.caption || "", img.caption_en) || "", image: img.image_url })}
                 >
                   <div className="rounded-lg overflow-hidden border border-border">
                     <img
-                      src={img.image}
-                      alt={img.title}
+                      src={img.image_url}
+                      alt={t(img.caption || "", img.caption_en) || "Gallery"}
                       className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1.5 line-clamp-1">{img.title}</p>
+                  <p className="text-xs text-muted-foreground mt-1.5 line-clamp-1">
+                    {t(img.caption || "", img.caption_en) || ""}
+                  </p>
                 </div>
               ))}
+              {gallery.length === 0 && (
+                <p className="text-muted-foreground text-sm col-span-full text-center py-4">
+                  {language === "kn" ? "ಫೋಟೊ ಲಭ್ಯವಿಲ್ಲ" : "No photos"}
+                </p>
+              )}
             </div>
             <div className="text-right mt-2">
-              <a href="#" className="text-primary text-sm font-semibold hover:underline">
-                More collection
-              </a>
+              <Link to="/gallery" className="text-primary text-sm font-semibold hover:underline">
+                {language === "kn" ? "ಇನ್ನಷ್ಟು ನೋಡಿ" : "More collection"}
+              </Link>
             </div>
           </div>
         </div>
@@ -151,32 +170,38 @@ const FeaturedNewsSection = () => {
         {/* Right - Latest News */}
         <div className="lg:col-span-1">
           <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-lg font-extrabold whitespace-nowrap">Latest News</h2>
+            <h2 className="text-lg font-extrabold whitespace-nowrap">
+              {language === "kn" ? "ಇತ್ತೀಚಿನ ಸುದ್ದಿ" : "Latest News"}
+            </h2>
             <Separator className="flex-1" />
           </div>
           <div className="space-y-3">
             {latestNews.map((news) => (
-              <article
-                key={news.id}
-                className="flex gap-3 cursor-pointer group rounded-md p-1.5 hover:bg-muted transition-colors"
-              >
-                <img
-                  src={news.image}
-                  alt={news.title}
-                  className="w-20 h-16 rounded object-cover flex-shrink-0"
-                  loading="lazy"
-                />
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold leading-snug line-clamp-3 text-card-foreground group-hover:text-primary transition-colors">
-                    {news.title}
-                  </h4>
-                  <div className="flex items-center gap-1 mt-1 text-muted-foreground text-[10px]">
-                    <Eye className="w-3 h-3" />
-                    <span>{news.time}</span>
+              <Link to={`/article/${news.id}`} key={news.id}>
+                <article className="flex gap-3 cursor-pointer group rounded-md p-1.5 hover:bg-muted transition-colors">
+                  <img
+                    src={news.thumbnail_url || "/placeholder.svg"}
+                    alt={t(news.title, news.title_en)}
+                    className="w-20 h-16 rounded object-cover flex-shrink-0"
+                    loading="lazy"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs font-bold leading-snug line-clamp-3 text-card-foreground group-hover:text-primary transition-colors">
+                      {t(news.title, news.title_en)}
+                    </h4>
+                    <div className="flex items-center gap-1 mt-1 text-muted-foreground text-[10px]">
+                      <Eye className="w-3 h-3" />
+                      <span>{formatTime(news.created_at)}</span>
+                    </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </Link>
             ))}
+            {latestNews.length === 0 && (
+              <p className="text-muted-foreground text-sm text-center py-4">
+                {language === "kn" ? "ಸುದ್ದಿ ಲಭ್ಯವಿಲ್ಲ" : "No news"}
+              </p>
+            )}
           </div>
         </div>
       </div>
