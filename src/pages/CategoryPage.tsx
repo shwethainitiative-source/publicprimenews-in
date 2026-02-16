@@ -74,9 +74,9 @@ const CategoryPage = () => {
     const fetchArticles = async () => {
       setLoading(true);
       let categoryId: string | null = null;
-      if (categoryInfo) {
+      if (slug) {
         const { data: cats } = await supabase
-          .from("categories").select("id").eq("name", categoryInfo.kn).limit(1);
+          .from("categories").select("id").eq("slug", slug).limit(1);
         categoryId = cats?.[0]?.id ?? null;
       }
 
@@ -108,9 +108,9 @@ const CategoryPage = () => {
     const fetchPage = async () => {
       setLoading(true);
       let categoryId: string | null = null;
-      if (categoryInfo) {
+      if (slug) {
         const { data: cats } = await supabase
-          .from("categories").select("id").eq("name", categoryInfo.kn).limit(1);
+          .from("categories").select("id").eq("slug", slug).limit(1);
         categoryId = cats?.[0]?.id ?? null;
       }
       const from = (page - 1) * PAGE_SIZE;

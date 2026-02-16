@@ -18,7 +18,7 @@ type Category = Tables<"categories">;
 const ManageNews = () => {
   const { user } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<(Category & { slug?: string | null })[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Article | null>(null);
   const [form, setForm] = useState({
@@ -35,7 +35,7 @@ const ManageNews = () => {
       supabase.from("categories").select("*").order("name"),
     ]);
     setArticles(a.data ?? []);
-    setCategories(c.data ?? []);
+    setCategories((c.data as any[]) ?? []);
   };
 
   useEffect(() => { fetchData(); }, []);
