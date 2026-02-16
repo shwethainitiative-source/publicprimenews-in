@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderBar from "@/components/HeaderBar";
@@ -182,6 +182,7 @@ const CategoryPage = () => {
             ) : (
               <div>
                 {featured && (
+                  <Link to={`/article/${featured.id}`}>
                   <article className="rounded-lg overflow-hidden bg-card shadow-md mb-6 cursor-pointer group">
                     <img
                       src={featured.thumbnail_url || "/placeholder.svg"}
@@ -204,11 +205,13 @@ const CategoryPage = () => {
                       </div>
                     </div>
                   </article>
+                  </Link>
                 )}
 
                 <div className="space-y-0 divide-y divide-border bg-card rounded-lg shadow-sm">
                   {listArticles.map((article, idx) => (
                     <div key={article.id}>
+                      <Link to={`/article/${article.id}`}>
                       <article className="flex gap-4 p-4 cursor-pointer group hover:bg-muted/50 transition-colors">
                         <img
                           src={article.thumbnail_url || "/placeholder.svg"}
@@ -231,6 +234,7 @@ const CategoryPage = () => {
                           </div>
                         </div>
                       </article>
+                      </Link>
                       {(idx + 1) % 4 === 0 && renderInlineAd()}
                     </div>
                   ))}

@@ -104,6 +104,8 @@ const ManageAds = () => {
             <div><Label>Position</Label>
               <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.position} onChange={e => setForm({ ...form, position: e.target.value })}>
                 <option value="sidebar">Sidebar</option>
+                <option value="top">Top Banner</option>
+                <option value="inside">Inside Content</option>
                 <option value="about">About Us Page</option>
                 <option value="below_news">Below News</option>
               </select>
