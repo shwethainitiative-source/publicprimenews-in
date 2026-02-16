@@ -10,13 +10,13 @@ interface Ad {
 interface AdSliderProps {
   showHeading?: boolean;
   position?: string;
+  aspectRatio?: string;
 }
 
-const AdSlider = ({ showHeading = true, position = "sidebar" }: AdSliderProps) => {
+const AdSlider = ({ showHeading = true, position = "sidebar", aspectRatio }: AdSliderProps) => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase
@@ -40,29 +40,36 @@ const AdSlider = ({ showHeading = true, position = "sidebar" }: AdSliderProps) =
 
   if (ads.length === 0) return null;
 
+  // Default aspect ratios: wide for home/bottom, tall for sidebar/other pages
+  const resolvedRatio = aspectRatio ?? (
+    position === "top" || position === "bottom" ? "16/5" :
+    position === "sidebar" ? "9/16" :
+    "9/16"
+  );
+
   return (
     <div
       className="w-full rounded-lg border bg-card overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      ref={containerRef}
     >
       {showHeading && (
         <div className="bg-primary text-primary-foreground text-center text-sm font-bold py-2">
           ಜಾಹೀರಾತು (Advertisement)
         </div>
       )}
-      <div className="relative w-full aspect-[16/5] overflow-hidden">
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: resolvedRatio }}>
         {ads.map((ad, i) => (
           <a
             key={ad.id}
             href={ad.redirect_link || "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute inset-0 w-full h-full transition-all duration-700 ease-in-out"
+            className="absolute inset-0 w-full h-full"
             style={{
               transform: `translateY(${(i - current) * 100}%)`,
-              opacity: i === current ? 1 : 0,
+              opacity: i === current ? 1 : 0.3,
+              transition: "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease",
             }}
           >
             <img
