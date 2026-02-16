@@ -177,7 +177,7 @@ const HeroSection = () => {
           </div>
 
           {/* Advertisement */}
-          <AdSlider showHeading={false} position="sidebar" />
+          <AdSlider showHeading={false} position="sidebar" aspectRatio="16/5" />
         </div>
       </div>
     </section>
