@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderBar from "@/components/HeaderBar";
@@ -65,12 +65,14 @@ const CategoryPage = () => {
     : slug || "";
 
   useEffect(() => {
+    if (slug === "write") return;
     supabase.from("advertisements").select("id, image_url, redirect_link")
       .eq("is_enabled", true).eq("position", "below_news")
       .then(({ data }) => setInlineAds(data ?? []));
-  }, []);
+  }, [slug]);
 
   useEffect(() => {
+    if (slug === "write") return;
     const fetchArticles = async () => {
       setLoading(true);
       let categoryId: string | null = null;
@@ -104,6 +106,7 @@ const CategoryPage = () => {
   }, [slug, categoryInfo]);
 
   useEffect(() => {
+    if (slug === "write") return;
     if (page === 1) return;
     const fetchPage = async () => {
       setLoading(true);
@@ -127,7 +130,12 @@ const CategoryPage = () => {
       setLoading(false);
     };
     fetchPage();
-  }, [page]);
+  }, [page, slug]);
+
+  // Redirect "write" slug to WriteForUs page
+  if (slug === "write") {
+    return <Navigate to="/write-for-us" replace />;
+  }
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   const featured = articles[0];

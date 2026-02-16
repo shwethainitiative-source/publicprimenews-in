@@ -47,6 +47,56 @@ export type Database = {
         }
         Relationships: []
       }
+      article_submissions: {
+        Row: {
+          article_title: string
+          category_id: string | null
+          content: string
+          created_at: string
+          email: string
+          id: string
+          image_url: string | null
+          name: string
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          article_title: string
+          category_id?: string | null
+          content: string
+          created_at?: string
+          email: string
+          id?: string
+          image_url?: string | null
+          name: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          article_title?: string
+          category_id?: string | null
+          content?: string
+          created_at?: string
+          email?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_submissions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       articles: {
         Row: {
           category_id: string | null

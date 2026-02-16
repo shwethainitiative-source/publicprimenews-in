@@ -12,6 +12,7 @@ import ArticlePage from "./pages/ArticlePage";
 import JobsPage from "./pages/JobsPage";
 import GalleryPage from "./pages/GalleryPage";
 import FeedbackPage from "./pages/FeedbackPage";
+import WriteForUsPage from "./pages/WriteForUsPage";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -25,6 +26,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import ManageJobs from "./pages/admin/ManageJobs";
 import ManageGallery from "./pages/admin/ManageGallery";
 import ManageFeedback from "./pages/admin/ManageFeedback";
+import ManageSubmissions from "./pages/admin/ManageSubmissions";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,7 @@ const App = () => (
               <Route path="/jobs" element={<JobsPage />} />
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/feedback" element={<FeedbackPage />} />
+              <Route path="/write-for-us" element={<WriteForUsPage />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
@@ -56,6 +59,7 @@ const App = () => (
                 <Route path="jobs" element={<ManageJobs />} />
                 <Route path="gallery" element={<ManageGallery />} />
                 <Route path="feedback" element={<ManageFeedback />} />
+                <Route path="submissions" element={<ManageSubmissions />} />
               </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
