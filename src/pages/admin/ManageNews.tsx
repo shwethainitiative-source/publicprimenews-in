@@ -24,7 +24,7 @@ const ManageNews = () => {
   const [form, setForm] = useState({
     title: "", title_en: "", description: "", description_en: "",
     category_id: "", tags: "",
-    is_featured: false, is_popular: false, is_breaking: false,
+    is_featured: false, is_popular: false, is_breaking: false, is_main: false,
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
@@ -42,7 +42,7 @@ const ManageNews = () => {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", is_featured: false, is_popular: false, is_breaking: false });
+    setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", is_featured: false, is_popular: false, is_breaking: false, is_main: false });
     setThumbnailFile(null);
     setDialogOpen(true);
   };
@@ -53,7 +53,7 @@ const ManageNews = () => {
       title: a.title, title_en: (a as any).title_en ?? "",
       description: a.description ?? "", description_en: (a as any).description_en ?? "",
       category_id: a.category_id ?? "",
-      tags: (a.tags ?? []).join(", "), is_featured: a.is_featured, is_popular: a.is_popular, is_breaking: a.is_breaking,
+      tags: (a.tags ?? []).join(", "), is_featured: a.is_featured, is_popular: a.is_popular, is_breaking: a.is_breaking, is_main: (a as any).is_main ?? false,
     });
     setThumbnailFile(null);
     setDialogOpen(true);
@@ -78,7 +78,7 @@ const ManageNews = () => {
       title: form.title, title_en: form.title_en || null,
       description: form.description || null, description_en: form.description_en || null,
       category_id: form.category_id || null, tags, thumbnail_url,
-      is_featured: form.is_featured, is_popular: form.is_popular, is_breaking: form.is_breaking,
+      is_featured: form.is_featured, is_popular: form.is_popular, is_breaking: form.is_breaking, is_main: form.is_main,
       created_by: user?.id ?? null,
     };
 
@@ -122,7 +122,8 @@ const ManageNews = () => {
                 <div className="flex gap-1 mt-1">
                   {a.is_featured && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Featured</span>}
                   {a.is_popular && <span className="text-[10px] bg-secondary/10 text-secondary-foreground px-1.5 py-0.5 rounded">Popular</span>}
-                  {a.is_breaking && <span className="text-[10px] bg-destructive/10 text-destructive px-1.5 py-0.5 rounded">Breaking</span>}
+                   {a.is_breaking && <span className="text-[10px] bg-destructive/10 text-destructive px-1.5 py-0.5 rounded">Breaking</span>}
+                   {(a as any).is_main && <span className="text-[10px] bg-accent/30 text-accent-foreground px-1.5 py-0.5 rounded">Main</span>}
                 </div>
               </div>
               <div className="flex gap-2">
@@ -157,6 +158,7 @@ const ManageNews = () => {
               <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_featured} onCheckedChange={v => setForm({ ...form, is_featured: v })} /> Featured</label>
               <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_popular} onCheckedChange={v => setForm({ ...form, is_popular: v })} /> Popular</label>
               <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_breaking} onCheckedChange={v => setForm({ ...form, is_breaking: v })} /> Breaking</label>
+              <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_main} onCheckedChange={v => setForm({ ...form, is_main: v })} /> Main (Our Districts)</label>
             </div>
             <Button className="w-full" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
           </div>

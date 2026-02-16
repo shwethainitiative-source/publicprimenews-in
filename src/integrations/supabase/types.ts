@@ -107,6 +107,7 @@ export type Database = {
           id: string
           is_breaking: boolean
           is_featured: boolean
+          is_main: boolean
           is_popular: boolean
           tags: string[] | null
           thumbnail_url: string | null
@@ -123,6 +124,7 @@ export type Database = {
           id?: string
           is_breaking?: boolean
           is_featured?: boolean
+          is_main?: boolean
           is_popular?: boolean
           tags?: string[] | null
           thumbnail_url?: string | null
@@ -139,6 +141,7 @@ export type Database = {
           id?: string
           is_breaking?: boolean
           is_featured?: boolean
+          is_main?: boolean
           is_popular?: boolean
           tags?: string[] | null
           thumbnail_url?: string | null

@@ -1,58 +1,77 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-interface Ad {
+interface CardItem {
   id: string;
+  type: "ad" | "article";
   image_url: string;
-  redirect_link: string | null;
+  link: string | null;
+  title?: string;
 }
 
 const SpecialSections = () => {
-  const { language } = useLanguage();
-  const [ads, setAds] = useState<Ad[]>([]);
+  const { language, t } = useLanguage();
+  const [items, setItems] = useState<CardItem[]>([]);
 
   useEffect(() => {
-    supabase
-      .from("advertisements")
-      .select("id, image_url, redirect_link")
-      .eq("is_enabled", true)
-      .eq("position", "top")
-      .then(({ data }) => setAds(data ?? []));
-  }, []);
+    const fetchItems = async () => {
+      const [adsRes, articlesRes] = await Promise.all([
+        supabase
+          .from("advertisements")
+          .select("id, image_url, redirect_link")
+          .eq("is_enabled", true)
+          .eq("position", "top"),
+        supabase
+          .from("articles")
+          .select("id, title, title_en, thumbnail_url")
+          .eq("is_main", true)
+          .order("created_at", { ascending: false })
+          .limit(7),
+      ]);
 
-  // Split ads into first row (3) and second row (4)
-  const firstRow = ads.slice(0, 3);
-  const secondRow = ads.slice(3, 7);
+      const adItems: CardItem[] = (adsRes.data ?? []).map(a => ({
+        id: a.id, type: "ad", image_url: a.image_url, link: a.redirect_link,
+      }));
+      const articleItems: CardItem[] = (articlesRes.data ?? [])
+        .filter(a => a.thumbnail_url)
+        .map(a => ({
+          id: a.id, type: "article", image_url: a.thumbnail_url!,
+          link: `/article/${a.id}`,
+          title: language === "kn" ? a.title : (a.title_en || a.title),
+        }));
 
-  const renderCard = (ad: Ad | undefined, height: string) => {
-    if (!ad) {
-      return (
-        <div className={`rounded-lg overflow-hidden bg-muted ${height}`} />
-      );
+      setItems([...articleItems, ...adItems].slice(0, 7));
+    };
+    fetchItems();
+  }, [language]);
+
+  const firstRow = items.slice(0, 3);
+  const secondRow = items.slice(3, 7);
+
+  const renderCard = (item: CardItem | undefined, height: string) => {
+    if (!item) {
+      return <div className={`rounded-lg overflow-hidden bg-muted ${height}`} />;
     }
-    return (
-      <a
-        href={ad.redirect_link || "#"}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block"
-      >
-        <div className={`relative rounded-lg overflow-hidden cursor-pointer group ${height}`}>
-          <img
-            src={ad.image_url}
-            alt="Ad"
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            loading="lazy"
-          />
-        </div>
-      </a>
+    const inner = (
+      <div className={`relative rounded-lg overflow-hidden cursor-pointer group ${height}`}>
+        <img src={item.image_url} alt={item.title || "Ad"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+        {item.title && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" >
+            <span className="absolute bottom-2 left-2 right-2 text-white text-xs font-bold line-clamp-2">{item.title}</span>
+          </div>
+        )}
+      </div>
     );
+    if (item.type === "article") {
+      return <Link to={item.link || "#"} className="block">{inner}</Link>;
+    }
+    return <a href={item.link || "#"} target="_blank" rel="noopener noreferrer" className="block">{inner}</a>;
   };
 
-  // Build arrays padded to fixed lengths
-  const firstSlots: (Ad | undefined)[] = [0, 1, 2].map(i => firstRow[i]);
-  const secondSlots: (Ad | undefined)[] = [0, 1, 2, 3].map(i => secondRow[i]);
+  const firstSlots: (CardItem | undefined)[] = [0, 1, 2].map(i => firstRow[i]);
+  const secondSlots: (CardItem | undefined)[] = [0, 1, 2, 3].map(i => secondRow[i]);
 
   return (
     <section className="container mx-auto px-4 py-6">
@@ -65,18 +84,18 @@ const SpecialSections = () => {
 
       {/* First Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-        {firstSlots.map((ad, i) => (
-          <div key={ad?.id ?? `empty-1-${i}`}>
-            {renderCard(ad, "h-[180px]")}
+        {firstSlots.map((item, i) => (
+          <div key={item?.id ?? `empty-1-${i}`}>
+            {renderCard(item, "h-[180px]")}
           </div>
         ))}
       </div>
 
       {/* Second Row */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {secondSlots.map((ad, i) => (
-          <div key={ad?.id ?? `empty-2-${i}`}>
-            {renderCard(ad, "h-[100px]")}
+        {secondSlots.map((item, i) => (
+          <div key={item?.id ?? `empty-2-${i}`}>
+            {renderCard(item, "h-[100px]")}
           </div>
         ))}
       </div>
