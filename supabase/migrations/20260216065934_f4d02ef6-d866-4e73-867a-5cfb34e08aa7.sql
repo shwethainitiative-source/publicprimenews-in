@@ -1,0 +1,2 @@
+ALTER TABLE public.advertisements DROP CONSTRAINT advertisements_position_check;
+ALTER TABLE public.advertisements ADD CONSTRAINT advertisements_position_check CHECK (position = ANY (ARRAY['sidebar', 'top', 'inside', 'bottom', 'about', 'below_news']));
