@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import MultiImageUploader, { type ImageItem } from "@/components/admin/MultiImageUploader";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Article = Tables<"articles">;
@@ -26,7 +27,7 @@ const ManageNews = () => {
     category_id: "", tags: "", youtube_url: "",
     home_position: "none", article_type: "normal", is_breaking: false,
   });
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [articleImages, setArticleImages] = useState<ImageItem[]>([]);
   const [saving, setSaving] = useState(false);
 
   const fetchData = async () => {
@@ -43,43 +44,49 @@ const ManageNews = () => {
   const openNew = () => {
     setEditing(null);
     setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", youtube_url: "", home_position: "none", article_type: "normal", is_breaking: false });
-    setThumbnailFile(null);
+    setArticleImages([]);
     setDialogOpen(true);
   };
 
-  const openEdit = (a: Article) => {
+  const openEdit = async (a: Article) => {
     setEditing(a);
     setForm({
       title: a.title, title_en: a.title_en ?? "",
       description: a.description ?? "", description_en: a.description_en ?? "",
       category_id: a.category_id ?? "",
-      tags: (a.tags ?? []).join(", "), youtube_url: (a as any).youtube_url ?? "",
-      home_position: (a as any).home_position ?? "none", article_type: a.article_type ?? "normal",
+      tags: (a.tags ?? []).join(", "), youtube_url: a.youtube_url ?? "",
+      home_position: a.home_position ?? "none", article_type: a.article_type ?? "normal",
       is_breaking: a.is_breaking ?? false,
     });
-    setThumbnailFile(null);
+    // Load existing images
+    const { data: imgs } = await supabase
+      .from("article_images")
+      .select("*")
+      .eq("article_id", a.id)
+      .order("sort_order");
+    setArticleImages(
+      (imgs ?? []).map((img: any) => ({
+        id: img.id,
+        image_url: img.image_url,
+        caption: img.caption ?? "",
+        caption_en: img.caption_en ?? "",
+        sort_order: img.sort_order,
+        is_cover: img.is_cover,
+      }))
+    );
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
     if (!form.title.trim()) { toast({ title: "Title is required", variant: "destructive" }); return; }
     setSaving(true);
-    let thumbnail_url = editing?.thumbnail_url ?? null;
 
-    if (thumbnailFile) {
-      const ext = thumbnailFile.name.split(".").pop();
-      const path = `${Date.now()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage.from("thumbnails").upload(path, thumbnailFile);
-      if (uploadErr) { toast({ title: "Upload failed", description: uploadErr.message, variant: "destructive" }); setSaving(false); return; }
-      const { data: urlData } = supabase.storage.from("thumbnails").getPublicUrl(path);
-      thumbnail_url = urlData.publicUrl;
-    }
-
+    const coverImage = articleImages.length > 0 ? articleImages[0].image_url : null;
     const tags = form.tags.split(",").map(t => t.trim()).filter(Boolean);
     const payload: any = {
       title: form.title, title_en: form.title_en || null,
       description: form.description || null, description_en: form.description_en || null,
-      category_id: form.category_id || null, tags, thumbnail_url,
+      category_id: form.category_id || null, tags, thumbnail_url: coverImage,
       youtube_url: form.youtube_url || null,
       home_position: form.home_position, article_type: form.article_type,
       is_breaking: form.is_breaking,
@@ -88,13 +95,36 @@ const ManageNews = () => {
       created_by: user?.id ?? null,
     };
 
+    let articleId = editing?.id;
+
     if (editing) {
       const { error } = await supabase.from("articles").update(payload).eq("id", editing.id);
-      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); } else { toast({ title: "Article updated" }); }
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); setSaving(false); return; }
     } else {
-      const { error } = await supabase.from("articles").insert(payload);
-      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); } else { toast({ title: "Article added" }); }
+      const { data, error } = await supabase.from("articles").insert(payload).select("id").single();
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); setSaving(false); return; }
+      articleId = data.id;
     }
+
+    // Sync article images
+    if (articleId) {
+      // Delete old images
+      await supabase.from("article_images").delete().eq("article_id", articleId);
+      // Insert new images
+      if (articleImages.length > 0) {
+        const imgPayload = articleImages.map((img, i) => ({
+          article_id: articleId!,
+          image_url: img.image_url,
+          caption: img.caption || null,
+          caption_en: img.caption_en || null,
+          sort_order: i,
+          is_cover: i === 0,
+        }));
+        await supabase.from("article_images").insert(imgPayload);
+      }
+    }
+
+    toast({ title: editing ? "Article updated" : "Article added" });
     setSaving(false);
     setDialogOpen(false);
     fetchData();
@@ -123,16 +153,16 @@ const ManageNews = () => {
               {a.thumbnail_url && <img src={a.thumbnail_url} alt="" className="w-20 h-14 object-cover rounded" />}
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-foreground truncate">{a.title}</h3>
-                {(a as any).title_en && <p className="text-xs text-muted-foreground truncate">{(a as any).title_en}</p>}
+                {a.title_en && <p className="text-xs text-muted-foreground truncate">{a.title_en}</p>}
                 <p className="text-xs text-muted-foreground">{getCategoryName(a.category_id)} • {new Date(a.created_at).toLocaleDateString()}</p>
                 <div className="flex gap-1 mt-1">
-                  {(a as any).home_position === "big_card" && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Big Card</span>}
-                  {(a as any).home_position === "latest_news" && <span className="text-[10px] bg-secondary/30 text-secondary-foreground px-1.5 py-0.5 rounded">Latest News</span>}
-                  {(a as any).home_position === "featured" && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Featured</span>}
-                  {(a as any).home_position === "main" && <span className="text-[10px] bg-accent/30 text-accent-foreground px-1.5 py-0.5 rounded">Main</span>}
-                   {a.is_breaking && <span className="text-[10px] bg-red-500/20 text-red-700 px-1.5 py-0.5 rounded">Breaking</span>}
-                   {(a as any).article_type === "live" && <span className="text-[10px] bg-green-500/20 text-green-700 px-1.5 py-0.5 rounded">Live</span>}
-                   {(a as any).article_type === "podcast" && <span className="text-[10px] bg-blue-500/20 text-blue-700 px-1.5 py-0.5 rounded">Podcast</span>}
+                  {a.home_position === "big_card" && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Big Card</span>}
+                  {a.home_position === "latest_news" && <span className="text-[10px] bg-secondary/30 text-secondary-foreground px-1.5 py-0.5 rounded">Latest News</span>}
+                  {a.home_position === "featured" && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Featured</span>}
+                  {a.home_position === "main" && <span className="text-[10px] bg-accent/30 text-accent-foreground px-1.5 py-0.5 rounded">Main</span>}
+                  {a.is_breaking && <span className="text-[10px] bg-red-500/20 text-red-700 px-1.5 py-0.5 rounded">Breaking</span>}
+                  {a.article_type === "live" && <span className="text-[10px] bg-green-500/20 text-green-700 px-1.5 py-0.5 rounded">Live</span>}
+                  {a.article_type === "podcast" && <span className="text-[10px] bg-blue-500/20 text-blue-700 px-1.5 py-0.5 rounded">Podcast</span>}
                 </div>
               </div>
               <div className="flex gap-2">
@@ -162,7 +192,15 @@ const ManageNews = () => {
               </select>
             </div>
             <div><Label>Tags (comma separated)</Label><Input value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} /></div>
-            <div><Label>Thumbnail Image</Label><Input type="file" accept="image/*" onChange={e => setThumbnailFile(e.target.files?.[0] ?? null)} /></div>
+
+            <MultiImageUploader
+              images={articleImages}
+              onChange={setArticleImages}
+              maxImages={3}
+              showCoverBadge
+              folderPrefix="articles/"
+            />
+
             <div><Label>YouTube Video URL (optional)</Label><Input value={form.youtube_url} onChange={e => setForm({ ...form, youtube_url: e.target.value })} placeholder="https://youtube.com/watch?v=..." /></div>
             <div><Label>Article Type</Label>
               <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.article_type} onChange={e => setForm({ ...form, article_type: e.target.value })}>
