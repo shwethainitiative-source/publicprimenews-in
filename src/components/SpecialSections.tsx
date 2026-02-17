@@ -23,10 +23,10 @@ const SpecialSections = () => {
           .select("id, image_url, redirect_link")
           .eq("is_enabled", true)
           .eq("position", "top"),
-        supabase
+        (supabase
           .from("articles")
-          .select("id, title, title_en, thumbnail_url")
-          .eq("is_main", true)
+          .select("id, title, title_en, thumbnail_url") as any)
+          .eq("home_position", "main")
           .order("created_at", { ascending: false })
           .limit(7),
       ]);
