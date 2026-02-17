@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import logoImage from "@/assets/primenews-logo.jpeg";
+import logoImage from "@/assets/prime-logo-white.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -26,33 +26,33 @@ const HeaderBar = () => {
   const logoSrc = settings?.website_logo_url || logoImage;
 
   return (
-    <header className="bg-accent text-accent-foreground border-b border-border">
+    <header className="bg-[#1a1a1a] text-white border-b border-white/10">
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
         {/* Date */}
-        <div className="border border-accent-foreground/30 px-3 py-1.5 text-sm font-medium rounded">
+        <div className="border border-white/30 px-3 py-1.5 text-sm font-medium rounded">
           {today}
         </div>
 
-        {/* Logo */}
+        {/* Logo + Slogan */}
         <div className="text-center flex flex-col items-center">
           <img
             src={logoSrc}
             alt="Public Prime News"
             className="h-12 md:h-16 w-auto object-contain"
           />
-          <p className="text-[10px] md:text-xs text-accent-foreground/70 tracking-[0.2em] mt-1 font-medium">
-            Clear Vision, True Mission
+          <p className="text-[10px] md:text-xs text-white/70 tracking-[0.2em] mt-1 font-medium">
+            {language === "kn" ? "ಸ್ಪಷ್ಟ ದೃಷ್ಟಿ, ನಿಜವಾದ ಧ್ಯೇಯ" : "Clear Vision, True Mission"}
           </p>
         </div>
 
         {/* Language Toggle */}
-        <div className="flex items-center border border-accent-foreground/30 rounded-full overflow-hidden text-sm">
+        <div className="flex items-center border border-white/30 rounded-full overflow-hidden text-sm">
           <button
             onClick={() => setLanguage("kn")}
             className={`px-3 py-1.5 font-semibold transition-colors ${
               language === "kn"
                 ? "bg-primary text-primary-foreground"
-                : "hover:bg-accent-foreground/10"
+                : "hover:bg-white/10"
             }`}
           >
             ಕನ್ನಡ
@@ -62,7 +62,7 @@ const HeaderBar = () => {
             className={`px-3 py-1.5 font-semibold transition-colors ${
               language === "en"
                 ? "bg-primary text-primary-foreground"
-                : "hover:bg-accent-foreground/10"
+                : "hover:bg-white/10"
             }`}
           >
             English
