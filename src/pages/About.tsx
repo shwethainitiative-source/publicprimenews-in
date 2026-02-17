@@ -3,7 +3,7 @@ import NavigationBar from "@/components/NavigationBar";
 import HeaderBar from "@/components/HeaderBar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import AdSlider from "@/components/AdSlider";
+import SponsoredCard from "@/components/SponsoredCard";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const commitments = [
@@ -117,7 +117,7 @@ const About = () => {
 
           {/* Right: Ad Slider */}
           <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
-            <AdSlider showHeading={false} position="sidebar" />
+            <SponsoredCard position="sidebar" />
           </div>
         </div>
       </main>
