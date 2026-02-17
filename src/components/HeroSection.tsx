@@ -53,7 +53,7 @@ const HeroSection = () => {
         .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
         .eq("home_position", "latest_news")
         .order("created_at", { ascending: false })
-        .limit(4);
+        .limit(5);
 
       setLatestNews((latestData as Article[]) ?? []);
     };
