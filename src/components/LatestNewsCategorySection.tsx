@@ -4,12 +4,15 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import AdSlider from "@/components/AdSlider";
+import ArticleLink from "@/components/ArticleLink";
+import { getYoutubeThumbnail } from "@/lib/youtube";
 
 interface Article {
   id: string;
   title: string;
   title_en: string | null;
   thumbnail_url: string | null;
+  youtube_url?: string | null;
   created_at: string;
 }
 
@@ -35,7 +38,7 @@ const LatestNewsCategorySection = () => {
     // Fetch latest articles
     supabase
       .from("articles")
-      .select("id, title, title_en, thumbnail_url, created_at")
+      .select("id, title, title_en, thumbnail_url, youtube_url, created_at")
       .order("created_at", { ascending: false })
       .limit(4)
       .then(({ data }) => setLatestNews((data as Article[]) ?? []));
@@ -52,7 +55,7 @@ const LatestNewsCategorySection = () => {
         if (cats?.[0]) {
           const { data: articles } = await supabase
             .from("articles")
-            .select("id, title, title_en, thumbnail_url, created_at")
+            .select("id, title, title_en, thumbnail_url, youtube_url, created_at")
             .eq("category_id", cats[0].id)
             .order("created_at", { ascending: false })
             .limit(1);
@@ -91,10 +94,10 @@ const LatestNewsCategorySection = () => {
           </div>
           <div className="divide-y divide-border">
             {latestNews.map((news) => (
-              <Link to={`/article/${news.id}`} key={news.id}>
+              <ArticleLink articleId={news.id} youtubeUrl={news.youtube_url} title={t(news.title, news.title_en)} key={news.id}>
                 <article className="flex gap-3 cursor-pointer group py-3 first:pt-0 last:pb-0">
                   <img
-                    src={news.thumbnail_url || "/placeholder.svg"}
+                    src={news.thumbnail_url || (news.youtube_url ? getYoutubeThumbnail(news.youtube_url) : null) || "/placeholder.svg"}
                     alt={t(news.title, news.title_en)}
                     className="w-24 h-18 rounded object-cover flex-shrink-0"
                     loading="lazy"
@@ -109,7 +112,7 @@ const LatestNewsCategorySection = () => {
                     </div>
                   </div>
                 </article>
-              </Link>
+              </ArticleLink>
             ))}
             {latestNews.length === 0 && (
               <p className="text-muted-foreground text-center py-4 text-sm">

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import AdSlider from "@/components/AdSlider";
+import ArticleLink from "@/components/ArticleLink";
+import { getYoutubeThumbnail } from "@/lib/youtube";
 
 interface Article {
   id: string;
@@ -16,6 +17,7 @@ interface Article {
   is_featured: boolean;
   category_id: string | null;
   article_type?: string;
+  youtube_url?: string | null;
   categories?: { name: string } | null;
 }
 
@@ -30,7 +32,7 @@ const HeroSection = () => {
       // Fetch 1 featured article
       const { data: featuredData } = await supabase
         .from("articles")
-        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, categories(name)")
+        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, youtube_url, categories(name)")
         .eq("is_featured", true)
         .order("created_at", { ascending: false })
         .limit(1);
@@ -40,7 +42,7 @@ const HeroSection = () => {
       // Fetch 6 popular/recent for side cards
       const { data: sideData } = await supabase
         .from("articles")
-        .select("id, title, title_en, thumbnail_url, created_at, category_id, categories(name)")
+        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)")
         .eq("is_popular", true)
         .order("created_at", { ascending: false })
         .limit(6);
@@ -50,7 +52,7 @@ const HeroSection = () => {
       // Fetch 5 latest news
       const { data: latestData } = await supabase
         .from("articles")
-        .select("id, title, title_en, thumbnail_url, created_at, category_id, categories(name)")
+        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)")
         .order("created_at", { ascending: false })
         .limit(5);
 
@@ -77,7 +79,7 @@ const HeroSection = () => {
         <div className="lg:col-span-2 flex flex-col gap-4">
           {/* Big Featured News */}
           {featured ? (
-            <Link to={`/article/${featured.id}`}>
+            <ArticleLink articleId={featured.id} youtubeUrl={featured.youtube_url} title={t(featured.title, featured.title_en)}>
               <article className="rounded-lg overflow-hidden group cursor-pointer bg-card shadow-md relative">
                 {(featured.article_type === "live" || featured.article_type === "podcast") && (
                   <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 bg-green-600 px-3 py-1 rounded text-white text-xs font-bold uppercase">
@@ -86,7 +88,7 @@ const HeroSection = () => {
                   </div>
                 )}
                 <img
-                  src={featured.thumbnail_url || "/placeholder.svg"}
+                  src={featured.thumbnail_url || (featured.youtube_url ? getYoutubeThumbnail(featured.youtube_url) : null) || "/placeholder.svg"}
                   alt={t(featured.title, featured.title_en)}
                   className="w-full h-[250px] md:h-[340px] object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
@@ -101,7 +103,7 @@ const HeroSection = () => {
                   </div>
                 </div>
               </article>
-            </Link>
+            </ArticleLink>
           ) : (
             <article className="rounded-lg overflow-hidden bg-card shadow-md h-[340px] flex items-center justify-center">
               <span className="text-muted-foreground">{language === "kn" ? "ಪ್ರಮುಖ ಸುದ್ದಿ ಲಭ್ಯವಿಲ್ಲ" : "No featured news"}</span>
@@ -118,10 +120,10 @@ const HeroSection = () => {
             </div>
             <div className="divide-y divide-border">
               {latestNews.map((news) => (
-                <Link to={`/article/${news.id}`} key={news.id}>
+                <ArticleLink articleId={news.id} youtubeUrl={(news as any).youtube_url} title={t(news.title, news.title_en)} key={news.id}>
                   <article className="flex gap-3 cursor-pointer group py-3 first:pt-0 last:pb-0">
                     <img
-                      src={news.thumbnail_url || "/placeholder.svg"}
+                      src={news.thumbnail_url || ((news as any).youtube_url ? getYoutubeThumbnail((news as any).youtube_url) : null) || "/placeholder.svg"}
                       alt={t(news.title, news.title_en)}
                       className="w-24 h-[72px] rounded object-cover flex-shrink-0"
                       loading="lazy"
@@ -136,7 +138,7 @@ const HeroSection = () => {
                       </div>
                     </div>
                   </article>
-                </Link>
+                </ArticleLink>
               ))}
               {latestNews.length === 0 && (
                 <p className="text-muted-foreground text-center py-4 text-sm">
@@ -151,10 +153,10 @@ const HeroSection = () => {
         <div className="flex flex-col gap-4 h-full">
           <div className="grid grid-cols-2 gap-3 flex-1">
             {sideCards.length > 0 ? sideCards.map((card) => (
-              <Link to={`/article/${card.id}`} key={card.id}>
+              <ArticleLink articleId={card.id} youtubeUrl={(card as any).youtube_url} title={t(card.title, card.title_en)} key={card.id}>
                 <article className="relative rounded-lg overflow-hidden group cursor-pointer min-h-[160px] h-full">
                   <img
-                    src={card.thumbnail_url || "/placeholder.svg"}
+                    src={card.thumbnail_url || ((card as any).youtube_url ? getYoutubeThumbnail((card as any).youtube_url) : null) || "/placeholder.svg"}
                     alt={t(card.title, card.title_en)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
@@ -175,7 +177,7 @@ const HeroSection = () => {
                     </div>
                   </div>
                 </article>
-              </Link>
+              </ArticleLink>
             )) : Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="relative rounded-lg overflow-hidden bg-muted min-h-[160px] flex items-center justify-center">
                 <span className="text-muted-foreground text-xs">{language === "kn" ? "ಸುದ್ದಿ" : "News"}</span>

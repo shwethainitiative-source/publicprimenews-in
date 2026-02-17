@@ -115,6 +115,7 @@ export type Database = {
           title: string
           title_en: string | null
           updated_at: string
+          youtube_url: string | null
         }
         Insert: {
           article_type?: string
@@ -133,6 +134,7 @@ export type Database = {
           title: string
           title_en?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Update: {
           article_type?: string
@@ -151,6 +153,7 @@ export type Database = {
           title?: string
           title_en?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Relationships: [
           {
