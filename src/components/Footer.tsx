@@ -53,6 +53,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
+                  onClick={(e) => { e.preventDefault(); window.open(social.url, '_blank', 'noopener,noreferrer'); }}
                   className="w-10 h-10 rounded-full bg-nav-foreground/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
                   <social.icon className="w-5 h-5" />
@@ -64,6 +65,7 @@ const Footer = () => {
                 href={settings.whatsapp_group_link}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => { e.preventDefault(); window.open(settings.whatsapp_group_link!, '_blank', 'noopener,noreferrer'); }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366] text-white text-sm font-semibold hover:bg-[#1da851] transition-colors"
               >
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">

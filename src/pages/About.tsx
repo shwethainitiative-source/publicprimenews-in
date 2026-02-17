@@ -77,6 +77,7 @@ const About = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
+                    onClick={(e) => { e.preventDefault(); window.open(social.url, '_blank', 'noopener,noreferrer'); }}
                     className={`w-14 h-14 rounded-full bg-muted flex items-center justify-center text-foreground/70 transition-colors ${social.color}`}
                   >
                     <social.icon className="w-7 h-7" />
@@ -101,6 +102,7 @@ const About = () => {
                   href={settings.whatsapp_group_link}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => { e.preventDefault(); window.open(settings.whatsapp_group_link!, '_blank', 'noopener,noreferrer'); }}
                 >
                   <Button size="lg" className="bg-[#25D366] hover:bg-[#1da851] text-white font-bold text-base px-8 py-3 rounded-full gap-2">
                     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
