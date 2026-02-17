@@ -24,7 +24,7 @@ const ManageNews = () => {
   const [form, setForm] = useState({
     title: "", title_en: "", description: "", description_en: "",
     category_id: "", tags: "", youtube_url: "",
-    is_featured: false, is_main: false, article_type: "normal",
+    home_position: "none", article_type: "normal",
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
@@ -42,7 +42,7 @@ const ManageNews = () => {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", youtube_url: "", is_featured: false, is_main: false, article_type: "normal" });
+    setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", youtube_url: "", home_position: "none", article_type: "normal" });
     setThumbnailFile(null);
     setDialogOpen(true);
   };
@@ -54,7 +54,7 @@ const ManageNews = () => {
       description: a.description ?? "", description_en: a.description_en ?? "",
       category_id: a.category_id ?? "",
       tags: (a.tags ?? []).join(", "), youtube_url: (a as any).youtube_url ?? "",
-      is_featured: a.is_featured, is_main: a.is_main ?? false, article_type: a.article_type ?? "normal",
+      home_position: (a as any).home_position ?? "none", article_type: a.article_type ?? "normal",
     });
     setThumbnailFile(null);
     setDialogOpen(true);
@@ -80,7 +80,9 @@ const ManageNews = () => {
       description: form.description || null, description_en: form.description_en || null,
       category_id: form.category_id || null, tags, thumbnail_url,
       youtube_url: form.youtube_url || null,
-      is_featured: form.is_featured, is_main: form.is_main, article_type: form.article_type,
+      home_position: form.home_position, article_type: form.article_type,
+      is_featured: form.home_position === "featured",
+      is_main: form.home_position === "main",
       created_by: user?.id ?? null,
     };
 
@@ -122,8 +124,10 @@ const ManageNews = () => {
                 {(a as any).title_en && <p className="text-xs text-muted-foreground truncate">{(a as any).title_en}</p>}
                 <p className="text-xs text-muted-foreground">{getCategoryName(a.category_id)} • {new Date(a.created_at).toLocaleDateString()}</p>
                 <div className="flex gap-1 mt-1">
-                  {a.is_featured && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Featured</span>}
-                  {(a as any).is_main && <span className="text-[10px] bg-accent/30 text-accent-foreground px-1.5 py-0.5 rounded">Main</span>}
+                  {(a as any).home_position === "big_card" && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Big Card</span>}
+                  {(a as any).home_position === "latest_news" && <span className="text-[10px] bg-secondary/30 text-secondary-foreground px-1.5 py-0.5 rounded">Latest News</span>}
+                  {(a as any).home_position === "featured" && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Featured</span>}
+                  {(a as any).home_position === "main" && <span className="text-[10px] bg-accent/30 text-accent-foreground px-1.5 py-0.5 rounded">Main</span>}
                   {(a as any).article_type === "live" && <span className="text-[10px] bg-green-500/20 text-green-700 px-1.5 py-0.5 rounded">Live</span>}
                   {(a as any).article_type === "podcast" && <span className="text-[10px] bg-blue-500/20 text-blue-700 px-1.5 py-0.5 rounded">Podcast</span>}
                 </div>
@@ -164,9 +168,14 @@ const ManageNews = () => {
                 <option value="podcast">Podcast</option>
               </select>
             </div>
-            <div className="flex items-center gap-6">
-              <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_featured} onCheckedChange={v => setForm({ ...form, is_featured: v })} /> Featured</label>
-              <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_main} onCheckedChange={v => setForm({ ...form, is_main: v })} /> Main (Our Districts)</label>
+            <div><Label>Home Page Position</Label>
+              <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.home_position} onChange={e => setForm({ ...form, home_position: e.target.value })}>
+                <option value="none">None</option>
+                <option value="big_card">Big Card (1 Large Featured)</option>
+                <option value="latest_news">Latest News (5 Items List)</option>
+                <option value="featured">Featured (Right 6 Cards)</option>
+                <option value="main">Main (Our Districts)</option>
+              </select>
             </div>
             <Button className="w-full" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
           </div>

@@ -105,6 +105,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           description_en: string | null
+          home_position: string
           id: string
           is_breaking: boolean
           is_featured: boolean
@@ -124,6 +125,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           description_en?: string | null
+          home_position?: string
           id?: string
           is_breaking?: boolean
           is_featured?: boolean
@@ -143,6 +145,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           description_en?: string | null
+          home_position?: string
           id?: string
           is_breaking?: boolean
           is_featured?: boolean

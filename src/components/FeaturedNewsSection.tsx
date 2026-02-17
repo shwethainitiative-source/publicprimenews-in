@@ -47,13 +47,13 @@ const FeaturedNewsSection = () => {
 
   useEffect(() => {
     // Fetch featured articles (is_featured)
-    supabase
+    (supabase
       .from("articles")
-      .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)")
-      .eq("is_featured", true)
+      .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)") as any)
+      .eq("home_position", "featured")
       .order("created_at", { ascending: false })
       .limit(3)
-      .then(({ data }) => setFeaturedNews((data as any[]) ?? []));
+      .then(({ data }: any) => setFeaturedNews((data as any[]) ?? []));
 
     // Fetch gallery photos
     supabase

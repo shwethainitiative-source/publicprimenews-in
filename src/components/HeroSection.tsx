@@ -29,30 +29,29 @@ const HeroSection = () => {
 
   useEffect(() => {
     const fetchNews = async () => {
-      // Fetch 1 featured article
-      const { data: featuredData } = await supabase
+      // Fetch 1 big card article (latest with home_position = 'big_card')
+      const { data: featuredData } = await (supabase
         .from("articles")
-        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, youtube_url, categories(name)")
-        .eq("is_featured", true)
+        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, youtube_url, categories(name)") as any)
+        .eq("home_position", "big_card")
         .order("created_at", { ascending: false })
         .limit(1);
 
       if (featuredData?.[0]) setFeatured(featuredData[0] as Article);
 
-      // Fetch 6 popular/recent for side cards
-      const { data: sideData } = await supabase
+      const { data: sideData } = await (supabase
         .from("articles")
-        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)")
-        .eq("is_popular", true)
+        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
+        .eq("home_position", "featured")
         .order("created_at", { ascending: false })
         .limit(6);
 
       setSideCards((sideData as Article[]) ?? []);
 
-      // Fetch 5 latest news
-      const { data: latestData } = await supabase
+      const { data: latestData } = await (supabase
         .from("articles")
-        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)")
+        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
+        .eq("home_position", "latest_news")
         .order("created_at", { ascending: false })
         .limit(5);
 
