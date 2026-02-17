@@ -6,6 +6,8 @@ import HeaderBar from "@/components/HeaderBar";
 import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
 import AdSlider from "@/components/AdSlider";
+import ArticleLink from "@/components/ArticleLink";
+import { getYoutubeThumbnail } from "@/lib/youtube";
 import { Clock } from "lucide-react";
 import {
   Pagination, PaginationContent, PaginationItem,
@@ -40,6 +42,7 @@ interface Article {
   description: string | null;
   description_en: string | null;
   thumbnail_url: string | null;
+  youtube_url: string | null;
   created_at: string;
   category_id: string | null;
 }
@@ -85,7 +88,7 @@ const CategoryPage = () => {
       const from = (page - 1) * PAGE_SIZE;
       let query = supabase
         .from("articles")
-        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, category_id", { count: "exact" })
+        .select("id, title, title_en, description, description_en, thumbnail_url, youtube_url, created_at, category_id", { count: "exact" })
         .order("created_at", { ascending: false })
         .range(from, from + PAGE_SIZE - 1);
 
@@ -119,7 +122,7 @@ const CategoryPage = () => {
       const from = (page - 1) * PAGE_SIZE;
       let query = supabase
         .from("articles")
-        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, category_id", { count: "exact" })
+        .select("id, title, title_en, description, description_en, thumbnail_url, youtube_url, created_at, category_id", { count: "exact" })
         .order("created_at", { ascending: false })
         .range(from, from + PAGE_SIZE - 1);
       if (categoryId) query = query.eq("category_id", categoryId);
@@ -190,10 +193,10 @@ const CategoryPage = () => {
             ) : (
               <div>
                 {featured && (
-                  <Link to={`/article/${featured.id}`}>
+                  <ArticleLink articleId={featured.id} youtubeUrl={featured.youtube_url} title={t(featured.title, featured.title_en)}>
                   <article className="rounded-lg overflow-hidden bg-card shadow-md mb-6 cursor-pointer group">
                     <img
-                      src={featured.thumbnail_url || "/placeholder.svg"}
+                      src={featured.thumbnail_url || (featured.youtube_url ? getYoutubeThumbnail(featured.youtube_url) : null) || "/placeholder.svg"}
                       alt=""
                       className="w-full h-[220px] md:h-[360px] object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
@@ -213,16 +216,16 @@ const CategoryPage = () => {
                       </div>
                     </div>
                   </article>
-                  </Link>
+                  </ArticleLink>
                 )}
 
                 <div className="space-y-0 divide-y divide-border bg-card rounded-lg shadow-sm">
                   {listArticles.map((article, idx) => (
                     <div key={article.id}>
-                      <Link to={`/article/${article.id}`}>
+                      <ArticleLink articleId={article.id} youtubeUrl={article.youtube_url} title={t(article.title, article.title_en)}>
                       <article className="flex gap-4 p-4 cursor-pointer group hover:bg-muted/50 transition-colors">
                         <img
-                          src={article.thumbnail_url || "/placeholder.svg"}
+                          src={article.thumbnail_url || (article.youtube_url ? getYoutubeThumbnail(article.youtube_url) : null) || "/placeholder.svg"}
                           alt=""
                           className="w-28 h-20 md:w-36 md:h-24 rounded object-cover flex-shrink-0"
                           loading="lazy"
@@ -242,7 +245,7 @@ const CategoryPage = () => {
                           </div>
                         </div>
                       </article>
-                      </Link>
+                      </ArticleLink>
                       {(idx + 1) % 4 === 0 && renderInlineAd()}
                     </div>
                   ))}

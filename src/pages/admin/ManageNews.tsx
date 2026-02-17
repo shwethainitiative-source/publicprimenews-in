@@ -23,7 +23,7 @@ const ManageNews = () => {
   const [editing, setEditing] = useState<Article | null>(null);
   const [form, setForm] = useState({
     title: "", title_en: "", description: "", description_en: "",
-    category_id: "", tags: "",
+    category_id: "", tags: "", youtube_url: "",
     is_featured: false, is_main: false, article_type: "normal",
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -42,7 +42,7 @@ const ManageNews = () => {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", is_featured: false, is_main: false, article_type: "normal" });
+    setForm({ title: "", title_en: "", description: "", description_en: "", category_id: "", tags: "", youtube_url: "", is_featured: false, is_main: false, article_type: "normal" });
     setThumbnailFile(null);
     setDialogOpen(true);
   };
@@ -50,10 +50,11 @@ const ManageNews = () => {
   const openEdit = (a: Article) => {
     setEditing(a);
     setForm({
-      title: a.title, title_en: (a as any).title_en ?? "",
-      description: a.description ?? "", description_en: (a as any).description_en ?? "",
+      title: a.title, title_en: a.title_en ?? "",
+      description: a.description ?? "", description_en: a.description_en ?? "",
       category_id: a.category_id ?? "",
-      tags: (a.tags ?? []).join(", "), is_featured: a.is_featured, is_main: (a as any).is_main ?? false, article_type: (a as any).article_type ?? "normal",
+      tags: (a.tags ?? []).join(", "), youtube_url: (a as any).youtube_url ?? "",
+      is_featured: a.is_featured, is_main: a.is_main ?? false, article_type: a.article_type ?? "normal",
     });
     setThumbnailFile(null);
     setDialogOpen(true);
@@ -78,6 +79,7 @@ const ManageNews = () => {
       title: form.title, title_en: form.title_en || null,
       description: form.description || null, description_en: form.description_en || null,
       category_id: form.category_id || null, tags, thumbnail_url,
+      youtube_url: form.youtube_url || null,
       is_featured: form.is_featured, is_main: form.is_main, article_type: form.article_type,
       created_by: user?.id ?? null,
     };
@@ -154,6 +156,7 @@ const ManageNews = () => {
             </div>
             <div><Label>Tags (comma separated)</Label><Input value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} /></div>
             <div><Label>Thumbnail Image</Label><Input type="file" accept="image/*" onChange={e => setThumbnailFile(e.target.files?.[0] ?? null)} /></div>
+            <div><Label>YouTube Video URL (optional)</Label><Input value={form.youtube_url} onChange={e => setForm({ ...form, youtube_url: e.target.value })} placeholder="https://youtube.com/watch?v=..." /></div>
             <div><Label>Article Type</Label>
               <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.article_type} onChange={e => setForm({ ...form, article_type: e.target.value })}>
                 <option value="normal">Normal</option>

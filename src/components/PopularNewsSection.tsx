@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Eye, Play, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import VideoModal from "@/components/VideoModal";
 import AdSlider from "@/components/AdSlider";
+import ArticleLink from "@/components/ArticleLink";
+import { getYoutubeThumbnail } from "@/lib/youtube";
 
 interface Article {
   id: string;
@@ -14,8 +15,8 @@ interface Article {
   description: string | null;
   description_en: string | null;
   thumbnail_url: string | null;
+  youtube_url: string | null;
   created_at: string;
-  categories?: { name: string } | null;
 }
 
 interface Video {
@@ -38,7 +39,7 @@ const PopularNewsSection = () => {
     // Fetch popular articles - 2 big + 4 small
     supabase
       .from("articles")
-      .select("id, title, title_en, description, description_en, thumbnail_url, created_at, categories(name)")
+      .select("id, title, title_en, description, description_en, thumbnail_url, youtube_url, created_at, categories(name)")
       .eq("is_popular", true)
       .order("created_at", { ascending: false })
       .limit(6)
@@ -81,10 +82,10 @@ const PopularNewsSection = () => {
           {/* Top Row - 2 Big Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {popularBig.length > 0 ? popularBig.map((news) => (
-              <Link to={`/article/${news.id}`} key={news.id}>
+              <ArticleLink articleId={news.id} youtubeUrl={news.youtube_url} title={t(news.title, news.title_en)} key={news.id}>
                 <div className="relative rounded-lg overflow-hidden cursor-pointer group h-[250px] sm:h-[280px]">
                   <img
-                    src={news.thumbnail_url || "/placeholder.svg"}
+                    src={news.thumbnail_url || (news.youtube_url ? getYoutubeThumbnail(news.youtube_url) : null) || "/placeholder.svg"}
                     alt={t(news.title, news.title_en)}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
@@ -105,7 +106,7 @@ const PopularNewsSection = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </ArticleLink>
             )) : Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="relative rounded-lg overflow-hidden bg-accent h-[280px] flex items-center justify-center">
                 <span className="text-muted-foreground">{language === "kn" ? "ಸುದ್ದಿ ಲಭ್ಯವಿಲ್ಲ" : "No news"}</span>
@@ -116,11 +117,11 @@ const PopularNewsSection = () => {
           {/* Bottom Row - Small News */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {popularSmall.length > 0 ? popularSmall.map((news) => (
-              <Link to={`/article/${news.id}`} key={news.id}>
+              <ArticleLink articleId={news.id} youtubeUrl={news.youtube_url} title={t(news.title, news.title_en)} key={news.id}>
                 <div className="flex gap-3 bg-card border border-border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow">
                   <div className="w-28 h-24 sm:w-32 sm:h-28 shrink-0">
                     <img
-                      src={news.thumbnail_url || "/placeholder.svg"}
+                      src={news.thumbnail_url || (news.youtube_url ? getYoutubeThumbnail(news.youtube_url) : null) || "/placeholder.svg"}
                       alt={t(news.title, news.title_en)}
                       className="w-full h-full object-cover"
                       loading="lazy"
@@ -136,7 +137,7 @@ const PopularNewsSection = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </ArticleLink>
             )) : null}
           </div>
         </div>

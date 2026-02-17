@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Clock, Eye, Radio, Headphones, Star } from "lucide-react";
+import { Clock, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import ArticleLink from "@/components/ArticleLink";
+import { Link } from "react-router-dom";
+import { getYoutubeThumbnail } from "@/lib/youtube";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +19,8 @@ interface Article {
   title: string;
   title_en: string | null;
   thumbnail_url: string | null;
+  youtube_url?: string | null;
   created_at: string;
-  categories?: { name: string } | null;
 }
 
 interface GalleryPhoto {
@@ -47,11 +49,11 @@ const FeaturedNewsSection = () => {
     // Fetch featured articles (is_featured)
     supabase
       .from("articles")
-      .select("id, title, title_en, thumbnail_url, created_at, categories(name)")
+      .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)")
       .eq("is_featured", true)
       .order("created_at", { ascending: false })
       .limit(3)
-      .then(({ data }) => setFeaturedNews((data as Article[]) ?? []));
+      .then(({ data }) => setFeaturedNews((data as any[]) ?? []));
 
     // Fetch gallery photos
     supabase
@@ -64,10 +66,10 @@ const FeaturedNewsSection = () => {
     // Fetch latest articles for right column
     supabase
       .from("articles")
-      .select("id, title, title_en, thumbnail_url, created_at, categories(name)")
+      .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)")
       .order("created_at", { ascending: false })
       .limit(5)
-      .then(({ data }) => setLatestNews((data as Article[]) ?? []));
+      .then(({ data }) => setLatestNews((data as any[]) ?? []));
   }, []);
 
   const formatTime = (dateStr: string) => {
@@ -94,11 +96,11 @@ const FeaturedNewsSection = () => {
           {/* Featured Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {featuredNews.length > 0 ? featuredNews.map((news) => (
-              <Link to={`/article/${news.id}`} key={news.id}>
+              <ArticleLink articleId={news.id} youtubeUrl={news.youtube_url} title={t(news.title, news.title_en)} key={news.id}>
                 <article className="group cursor-pointer rounded-lg overflow-hidden border border-border bg-card hover:shadow-md transition-shadow">
                   <div className="relative">
                     <img
-                      src={news.thumbnail_url || "/placeholder.svg"}
+                      src={news.thumbnail_url || (news.youtube_url ? getYoutubeThumbnail(news.youtube_url) : null) || "/placeholder.svg"}
                       alt={t(news.title, news.title_en)}
                       className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
@@ -117,7 +119,7 @@ const FeaturedNewsSection = () => {
                     </div>
                   </div>
                 </article>
-              </Link>
+              </ArticleLink>
             )) : Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="rounded-lg border border-border bg-card h-64 flex items-center justify-center">
                 <span className="text-muted-foreground text-sm">{language === "kn" ? "ಸುದ್ದಿ ಲಭ್ಯವಿಲ್ಲ" : "No news"}</span>
@@ -177,10 +179,10 @@ const FeaturedNewsSection = () => {
           </div>
           <div className="space-y-3">
             {latestNews.map((news) => (
-              <Link to={`/article/${news.id}`} key={news.id}>
+              <ArticleLink articleId={news.id} youtubeUrl={news.youtube_url} title={t(news.title, news.title_en)} key={news.id}>
                 <article className="flex gap-3 cursor-pointer group rounded-md p-1.5 hover:bg-muted transition-colors">
                   <img
-                    src={news.thumbnail_url || "/placeholder.svg"}
+                    src={news.thumbnail_url || (news.youtube_url ? getYoutubeThumbnail(news.youtube_url) : null) || "/placeholder.svg"}
                     alt={t(news.title, news.title_en)}
                     className="w-20 h-16 rounded object-cover flex-shrink-0"
                     loading="lazy"
@@ -195,7 +197,7 @@ const FeaturedNewsSection = () => {
                     </div>
                   </div>
                 </article>
-              </Link>
+              </ArticleLink>
             ))}
             {latestNews.length === 0 && (
               <p className="text-muted-foreground text-sm text-center py-4">
