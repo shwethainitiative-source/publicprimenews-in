@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderBar from "@/components/HeaderBar";
 import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
-import AdSlider from "@/components/AdSlider";
+import SponsoredCard from "@/components/SponsoredCard";
 import ArticleLink from "@/components/ArticleLink";
 import { getYoutubeThumbnail } from "@/lib/youtube";
 import { Clock } from "lucide-react";
@@ -284,7 +284,7 @@ const CategoryPage = () => {
 
           {/* Right: Ad Sidebar */}
           <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
-            <AdSlider showHeading={false} position="sidebar" />
+            <SponsoredCard position="sidebar" />
           </div>
         </div>
       </main>

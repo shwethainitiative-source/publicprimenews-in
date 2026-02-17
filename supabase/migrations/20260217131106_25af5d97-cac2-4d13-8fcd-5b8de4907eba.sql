@@ -1,0 +1,4 @@
+
+ALTER TABLE public.advertisements
+ADD COLUMN IF NOT EXISTS title TEXT,
+ADD COLUMN IF NOT EXISTS description TEXT;

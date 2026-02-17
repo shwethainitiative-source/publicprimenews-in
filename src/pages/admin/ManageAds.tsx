@@ -18,7 +18,7 @@ const ManageAds = () => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Ad | null>(null);
-  const [form, setForm] = useState({ redirect_link: "", position: "sidebar", is_enabled: true });
+  const [form, setForm] = useState({ redirect_link: "", position: "sidebar", is_enabled: true, title: "", description: "" });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -29,8 +29,8 @@ const ManageAds = () => {
 
   useEffect(() => { fetchAds(); }, []);
 
-  const openNew = () => { setEditing(null); setForm({ redirect_link: "", position: "sidebar", is_enabled: true }); setImageFile(null); setDialogOpen(true); };
-  const openEdit = (a: Ad) => { setEditing(a); setForm({ redirect_link: a.redirect_link ?? "", position: a.position, is_enabled: a.is_enabled }); setImageFile(null); setDialogOpen(true); };
+  const openNew = () => { setEditing(null); setForm({ redirect_link: "", position: "sidebar", is_enabled: true, title: "", description: "" }); setImageFile(null); setDialogOpen(true); };
+  const openEdit = (a: Ad) => { setEditing(a); setForm({ redirect_link: a.redirect_link ?? "", position: a.position, is_enabled: a.is_enabled, title: (a as any).title ?? "", description: (a as any).description ?? "" }); setImageFile(null); setDialogOpen(true); };
 
   const handleSave = async () => {
     setSaving(true);
@@ -47,7 +47,7 @@ const ManageAds = () => {
 
     if (!image_url) { toast({ title: "Image required", variant: "destructive" }); setSaving(false); return; }
 
-    const payload = { image_url, redirect_link: form.redirect_link || null, position: form.position, is_enabled: form.is_enabled, created_by: user?.id ?? null };
+    const payload = { image_url, redirect_link: form.redirect_link || null, position: form.position, is_enabled: form.is_enabled, created_by: user?.id ?? null, title: form.title || null, description: form.description || null } as any;
     if (editing) {
       const { error } = await supabase.from("advertisements").update(payload).eq("id", editing.id);
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" }); else toast({ title: "Ad updated" });
@@ -100,6 +100,8 @@ const ManageAds = () => {
           <div className="space-y-4">
             <div><Label>Ad Image</Label><Input type="file" accept="image/*" onChange={e => setImageFile(e.target.files?.[0] ?? null)} /></div>
             {editing?.image_url && !imageFile && <img src={editing.image_url} alt="" className="w-full h-32 object-cover rounded" />}
+            <div><Label>Title (optional)</Label><Input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Ad title" /></div>
+            <div><Label>Description (optional)</Label><Input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Short description" /></div>
             <div><Label>Redirect Link (optional)</Label><Input value={form.redirect_link} onChange={e => setForm({ ...form, redirect_link: e.target.value })} /></div>
             <div><Label>Position</Label>
               <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.position} onChange={e => setForm({ ...form, position: e.target.value })}>
