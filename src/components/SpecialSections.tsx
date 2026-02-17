@@ -17,32 +17,22 @@ const SpecialSections = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const [adsRes, articlesRes] = await Promise.all([
-        supabase
-          .from("advertisements")
-          .select("id, image_url, redirect_link")
-          .eq("is_enabled", true)
-          .eq("position", "top"),
-        (supabase
-          .from("articles")
-          .select("id, title, title_en, thumbnail_url") as any)
-          .eq("home_position", "main")
-          .order("created_at", { ascending: false })
-          .limit(7),
-      ]);
+      const { data } = await (supabase
+        .from("articles")
+        .select("id, title, title_en, thumbnail_url") as any)
+        .eq("home_position", "main")
+        .order("created_at", { ascending: false })
+        .limit(7);
 
-      const adItems: CardItem[] = (adsRes.data ?? []).map(a => ({
-        id: a.id, type: "ad", image_url: a.image_url, link: a.redirect_link,
-      }));
-      const articleItems: CardItem[] = (articlesRes.data ?? [])
+      const articleItems: CardItem[] = (data ?? [])
         .filter(a => a.thumbnail_url)
         .map(a => ({
-          id: a.id, type: "article", image_url: a.thumbnail_url!,
+          id: a.id, type: "article" as const, image_url: a.thumbnail_url!,
           link: `/article/${a.id}`,
           title: language === "kn" ? a.title : (a.title_en || a.title),
         }));
 
-      setItems([...articleItems, ...adItems].slice(0, 7));
+      setItems(articleItems.slice(0, 7));
     };
     fetchItems();
   }, [language]);
