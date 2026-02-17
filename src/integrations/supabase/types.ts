@@ -53,6 +53,47 @@ export type Database = {
         }
         Relationships: []
       }
+      article_images: {
+        Row: {
+          article_id: string
+          caption: string | null
+          caption_en: string | null
+          created_at: string
+          id: string
+          image_url: string
+          is_cover: boolean
+          sort_order: number
+        }
+        Insert: {
+          article_id: string
+          caption?: string | null
+          caption_en?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          is_cover?: boolean
+          sort_order?: number
+        }
+        Update: {
+          article_id?: string
+          caption?: string | null
+          caption_en?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_cover?: boolean
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_images_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       article_submissions: {
         Row: {
           article_title: string
@@ -257,6 +298,74 @@ export type Database = {
           id?: string
           image_url?: string
           sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gallery_post_images: {
+        Row: {
+          caption: string | null
+          caption_en: string | null
+          created_at: string
+          id: string
+          image_url: string
+          post_id: string
+          sort_order: number
+        }
+        Insert: {
+          caption?: string | null
+          caption_en?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          post_id: string
+          sort_order?: number
+        }
+        Update: {
+          caption?: string | null
+          caption_en?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          post_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_post_images_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_posts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          sort_order: number | null
+          title: string | null
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          sort_order?: number | null
+          title?: string | null
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          sort_order?: number | null
+          title?: string | null
+          title_en?: string | null
           updated_at?: string
         }
         Relationships: []

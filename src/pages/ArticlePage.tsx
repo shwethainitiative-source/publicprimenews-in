@@ -6,7 +6,17 @@ import HeaderBar from "@/components/HeaderBar";
 import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
 import SponsoredCard from "@/components/SponsoredCard";
+import ImageSlider from "@/components/ImageSlider";
 import { Clock } from "lucide-react";
+
+interface ArticleImage {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  caption_en: string | null;
+  sort_order: number;
+  is_cover: boolean;
+}
 
 interface Article {
   id: string;
@@ -23,32 +33,41 @@ const ArticlePage = () => {
   const { id } = useParams<{ id: string }>();
   const { language, t } = useLanguage();
   const [article, setArticle] = useState<Article | null>(null);
+  const [images, setImages] = useState<ArticleImage[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    supabase
-      .from("articles")
-      .select("id, title, title_en, description, description_en, thumbnail_url, created_at, categories(name)")
-      .eq("id", id)
-      .single()
-      .then(({ data }) => {
-        setArticle(data as Article | null);
-        setLoading(false);
-      });
+    Promise.all([
+      supabase
+        .from("articles")
+        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, categories(name)")
+        .eq("id", id)
+        .single(),
+      supabase
+        .from("article_images")
+        .select("*")
+        .eq("article_id", id)
+        .order("sort_order"),
+    ]).then(([articleRes, imagesRes]) => {
+      setArticle(articleRes.data as Article | null);
+      setImages((imagesRes.data as ArticleImage[]) ?? []);
+      setLoading(false);
+    });
   }, [id]);
 
   const formatTime = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString(language === "kn" ? "kn-IN" : "en-IN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
     });
   };
+
+  // Use article_images if available, otherwise fall back to thumbnail_url
+  const coverImage = images.length > 0 ? images[0] : null;
+  const galleryImages = images.length > 1 ? images.slice(1) : [];
+  const coverUrl = coverImage?.image_url || article?.thumbnail_url || "/placeholder.svg";
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,11 +85,18 @@ const ArticlePage = () => {
         ) : (
           <div className="flex flex-col lg:flex-row gap-6">
             <article className="flex-1 min-w-0 bg-card rounded-lg shadow-md overflow-hidden">
+              {/* Cover Image */}
               <img
-                src={article.thumbnail_url || "/placeholder.svg"}
+                src={coverUrl}
                 alt={t(article.title, article.title_en)}
-                className="w-full h-[300px] md:h-[450px] object-cover"
+                className="w-full h-[300px] md:h-[450px] object-cover object-center"
               />
+              {coverImage?.caption && (
+                <p className="text-xs text-muted-foreground px-6 pt-2">
+                  {t(coverImage.caption, coverImage.caption_en)}
+                </p>
+              )}
+
               <div className="p-6">
                 {article.categories?.name && (
                   <span className="text-xs font-bold uppercase text-primary tracking-wider">
@@ -87,6 +113,24 @@ const ArticlePage = () => {
                 <div className="mt-6 text-foreground leading-relaxed whitespace-pre-wrap">
                   {t(article.description, article.description_en) || (language === "kn" ? "ವಿವರ ಲಭ್ಯವಿಲ್ಲ" : "No details available")}
                 </div>
+
+                {/* Gallery Images (images 2 & 3) */}
+                {galleryImages.length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="text-lg font-bold text-card-foreground mb-3">
+                      {language === "kn" ? "ಫೋಟೊ ಗ್ಯಾಲರಿ" : "Photo Gallery"}
+                    </h3>
+                    <ImageSlider
+                      images={galleryImages}
+                      language={language}
+                      t={t}
+                      imageClassName="w-full h-[250px] md:h-[400px] object-cover object-center rounded-lg"
+                      showCaptions
+                      showDots
+                      showArrows
+                    />
+                  </div>
+                )}
               </div>
             </article>
             <div className="w-full lg:w-72 xl:w-80 flex-shrink-0">
