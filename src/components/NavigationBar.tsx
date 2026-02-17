@@ -81,12 +81,12 @@ const NavigationBar = () => {
         </div>
 
         {/* Desktop menu */}
-        <ul className="hidden md:flex items-center gap-0 text-sm font-medium">
+        <ul className="hidden md:flex items-center gap-0 text-[clamp(0.65rem,1.1vw,0.875rem)] font-medium flex-wrap">
           {menuItems.map((item) => (
             <li key={item.labelKn} className="relative group">
               {item.children ? (
                 <>
-                  <button className="flex items-center gap-1 px-3 py-3 hover:bg-primary/20 transition-colors whitespace-nowrap">
+                  <button className="flex items-center gap-1 px-2 lg:px-3 py-3 hover:bg-primary/20 transition-colors whitespace-nowrap">
                     {getLabel(item)}
                     <ChevronDown className="w-3 h-3" />
                   </button>
@@ -106,7 +106,7 @@ const NavigationBar = () => {
               ) : (
                 <Link
                   to={item.href!}
-                  className="block px-3 py-3 hover:bg-primary/20 transition-colors whitespace-nowrap"
+                  className="block px-2 lg:px-3 py-3 hover:bg-primary/20 transition-colors whitespace-nowrap"
                 >
                   {getLabel(item)}
                 </Link>

@@ -26,7 +26,7 @@ const HeaderBar = () => {
   const logoSrc = settings?.website_logo_url || logoImage;
 
   return (
-    <header className="bg-[#1a1a1a] text-white border-b border-white/10">
+    <header className="bg-[#000000] text-white border-b border-white/10">
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
         {/* Date */}
         <div className="border border-white/30 px-3 py-1.5 text-sm font-medium rounded">
