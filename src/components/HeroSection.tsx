@@ -89,7 +89,7 @@ const HeroSection = () => {
                 <img
                   src={featured.thumbnail_url || (featured.youtube_url ? getYoutubeThumbnail(featured.youtube_url) : null) || "/placeholder.svg"}
                   alt={t(featured.title, featured.title_en)}
-                  className="w-full h-[250px] md:h-[340px] object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-[250px] md:h-[340px] object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />
                 <div className="p-4">
@@ -124,7 +124,7 @@ const HeroSection = () => {
                     <img
                       src={news.thumbnail_url || ((news as any).youtube_url ? getYoutubeThumbnail((news as any).youtube_url) : null) || "/placeholder.svg"}
                       alt={t(news.title, news.title_en)}
-                      className="w-24 h-[72px] rounded object-cover flex-shrink-0"
+                      className="w-24 h-[72px] rounded object-cover object-center flex-shrink-0"
                       loading="lazy"
                     />
                     <div className="flex-1 min-w-0">
@@ -157,7 +157,7 @@ const HeroSection = () => {
                   <img
                     src={card.thumbnail_url || ((card as any).youtube_url ? getYoutubeThumbnail((card as any).youtube_url) : null) || "/placeholder.svg"}
                     alt={t(card.title, card.title_en)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
