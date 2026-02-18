@@ -18,7 +18,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import ManageNews from "./pages/admin/ManageNews";
-import ManageVideos from "./pages/admin/ManageVideos";
+
 import ManageQuotes from "./pages/admin/ManageQuotes";
 import ManageAds from "./pages/admin/ManageAds";
 import ManageCategories from "./pages/admin/ManageCategories";
@@ -51,7 +51,7 @@ const App = () => (
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="news" element={<ManageNews />} />
-                <Route path="videos" element={<ManageVideos />} />
+                
                 <Route path="quotes" element={<ManageQuotes />} />
                 <Route path="ads" element={<ManageAds />} />
                 <Route path="categories" element={<ManageCategories />} />
