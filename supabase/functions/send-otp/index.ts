@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     const gmailPassword = Deno.env.get("GMAIL_APP_PASSWORD");
     if (!gmailPassword) throw new Error("GMAIL_APP_PASSWORD not configured");
 
-    const gmailUser = "publicprimenews@gmail.com";
+    const gmailUser = "publicprimeofficial@gmail.com";
 
     const client = new SmtpClient();
     await client.connectTLS({
