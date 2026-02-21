@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,7 +33,7 @@ Deno.serve(async (req) => {
 
     // Generate 6-digit OTP
     const otp = String(Math.floor(100000 + Math.random() * 900000));
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
     // Invalidate previous OTPs for this email
     await supabaseAdmin.from("password_reset_otps").update({ used: true }).eq("email", email.toLowerCase()).eq("used", false);
@@ -45,38 +46,39 @@ Deno.serve(async (req) => {
     });
     if (insertErr) throw insertErr;
 
-    // Send email via Resend
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendKey) throw new Error("RESEND_API_KEY not configured");
+    // Send email via Gmail SMTP
+    const gmailPassword = Deno.env.get("GMAIL_APP_PASSWORD");
+    if (!gmailPassword) throw new Error("GMAIL_APP_PASSWORD not configured");
 
-    const emailRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: "Public Prime <onboarding@resend.dev>",
-        to: [email],
-        subject: "Password Reset OTP - Public Prime",
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:20px;">
-            <h2 style="color:#333;">Password Reset</h2>
-            <p>Your OTP for password reset is:</p>
-            <div style="background:#f4f4f4;padding:20px;text-align:center;border-radius:8px;margin:20px 0;">
-              <span style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#222;">${otp}</span>
-            </div>
-            <p style="color:#666;font-size:14px;">This OTP is valid for 10 minutes. Do not share it with anyone.</p>
-            <p style="color:#999;font-size:12px;">If you didn't request this, please ignore this email.</p>
-          </div>
-        `,
-      }),
+    const gmailUser = "publicprimenews@gmail.com";
+
+    const client = new SmtpClient();
+    await client.connectTLS({
+      hostname: "smtp.gmail.com",
+      port: 465,
+      username: gmailUser,
+      password: gmailPassword,
     });
 
-    if (!emailRes.ok) {
-      const errBody = await emailRes.text();
-      console.error("Resend error:", errBody);
-      return new Response(JSON.stringify({ error: "Failed to send email. Please try again." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
+    await client.send({
+      from: gmailUser,
+      to: email,
+      subject: "Password Reset OTP - Public Prime",
+      content: "text/html",
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:20px;">
+          <h2 style="color:#333;">Password Reset</h2>
+          <p>Your OTP for password reset is:</p>
+          <div style="background:#f4f4f4;padding:20px;text-align:center;border-radius:8px;margin:20px 0;">
+            <span style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#222;">${otp}</span>
+          </div>
+          <p style="color:#666;font-size:14px;">This OTP is valid for 10 minutes. Do not share it with anyone.</p>
+          <p style="color:#999;font-size:12px;">If you didn't request this, please ignore this email.</p>
+        </div>
+      `,
+    });
 
-    await emailRes.text();
+    await client.close();
 
     return new Response(JSON.stringify({ success: true, message: "OTP sent to your email" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {
