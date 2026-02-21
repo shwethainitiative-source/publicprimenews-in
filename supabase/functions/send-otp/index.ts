@@ -53,12 +53,13 @@ Deno.serve(async (req) => {
     const gmailUser = "publicprimeofficial@gmail.com";
 
     const client = new SmtpClient();
-    await client.connectTLS({
+    await client.connect({
       hostname: "smtp.gmail.com",
-      port: 465,
+      port: 587,
       username: gmailUser,
       password: gmailPassword,
     });
+    await client.starttls({ hostname: "smtp.gmail.com" });
 
     await client.send({
       from: gmailUser,
