@@ -58,6 +58,63 @@ const ArticlePage = () => {
     });
   }, [id]);
 
+  // Dynamic OG meta tags
+  useEffect(() => {
+    if (!article) return;
+
+    const title = language === "kn" ? article.title : (article.title_en || article.title);
+    const description = (language === "kn" ? article.description : (article.description_en || article.description)) || "";
+    const shortDesc = description.substring(0, 160);
+    const ogImage = images[0]?.image_url || article.thumbnail_url || "";
+    const articleUrl = `${window.location.origin}/article/${article.id}`;
+
+    document.title = `${title} - Public Prime News`;
+
+    const metaTags: Record<string, string> = {
+      "og:title": title,
+      "og:description": shortDesc,
+      "og:image": ogImage,
+      "og:url": articleUrl,
+      "og:type": "article",
+      "twitter:card": "summary_large_image",
+      "twitter:title": title,
+      "twitter:description": shortDesc,
+      "twitter:image": ogImage,
+    };
+
+    const setMeta = (property: string, content: string) => {
+      const attr = property.startsWith("twitter:") ? "name" : "property";
+      let el = document.querySelector(`meta[${attr}="${property}"]`) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+
+    Object.entries(metaTags).forEach(([key, val]) => setMeta(key, val));
+
+    // Also update description meta
+    let descMeta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (descMeta) descMeta.content = shortDesc;
+
+    return () => {
+      document.title = "Public Prime News";
+      // Reset OG tags to defaults
+      const defaults: Record<string, string> = {
+        "og:title": "Public Prime News",
+        "og:description": "Latest news, breaking stories and updates from Public Prime News",
+        "og:type": "website",
+      };
+      Object.entries(defaults).forEach(([key, val]) => setMeta(key, val));
+      ["og:image", "og:url", "twitter:title", "twitter:description", "twitter:image"].forEach((key) => {
+        const attr = key.startsWith("twitter:") ? "name" : "property";
+        document.querySelector(`meta[${attr}="${key}"]`)?.removeAttribute("content");
+      });
+    };
+  }, [article, images, language]);
+
   const formatTime = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString(language === "kn" ? "kn-IN" : "en-IN", {
