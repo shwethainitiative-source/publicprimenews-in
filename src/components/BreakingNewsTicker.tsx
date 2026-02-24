@@ -11,6 +11,7 @@ const BreakingNewsTicker = () => {
       .from("articles")
       .select("title, title_en")
       .eq("is_breaking", true)
+      .neq("status", "draft")
       .order("created_at", { ascending: false })
       .limit(10)
       .then(({ data }) => {
