@@ -40,8 +40,8 @@ const HeaderBar = () => {
             alt="Public Prime News"
             className="h-12 md:h-16 w-auto object-contain"
           />
-          <p className="text-[10px] md:text-xs text-white/70 tracking-[0.2em] mt-1 font-medium">
-            {language === "kn" ? "ಸ್ಪಷ್ಟ ದೃಷ್ಟಿ, ನಿಜವಾದ ಧ್ಯೇಯ" : "Clear Vision, True Mission"}
+          <p className="text-[10px] md:text-xs text-white/70 tracking-[0.2em] mt-1 font-bold">
+            Clear Vision, True Mission
           </p>
         </div>
 
