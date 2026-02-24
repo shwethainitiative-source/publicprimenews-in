@@ -51,7 +51,6 @@ const FeaturedNewsSection = () => {
       .from("articles")
       .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)") as any)
       .eq("home_position", "featured")
-      .neq("status", "draft")
       .order("created_at", { ascending: false })
       .limit(3)
       .then(({ data }: any) => setFeaturedNews((data as any[]) ?? []));
@@ -68,7 +67,6 @@ const FeaturedNewsSection = () => {
     supabase
       .from("articles")
       .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)")
-      .neq("status", "draft")
       .order("created_at", { ascending: false })
       .limit(5)
       .then(({ data }) => setLatestNews((data as any[]) ?? []));

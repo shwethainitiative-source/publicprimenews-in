@@ -42,7 +42,6 @@ const PopularNewsSection = () => {
       .from("articles")
       .select("id, title, title_en, description, description_en, thumbnail_url, youtube_url, created_at, categories(name)")
       .eq("is_popular", true)
-      .neq("status", "draft")
       .order("created_at", { ascending: false })
       .limit(6)
       .then(({ data }) => {
