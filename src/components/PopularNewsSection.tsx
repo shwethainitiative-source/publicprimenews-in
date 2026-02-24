@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import VideoModal from "@/components/VideoModal";
 import AdSlider from "@/components/AdSlider";
 import ArticleLink from "@/components/ArticleLink";
+import ShareButton from "@/components/ShareButton";
 import { getYoutubeThumbnail } from "@/lib/youtube";
 
 interface Article {
@@ -95,6 +96,9 @@ const PopularNewsSection = () => {
                     <Badge className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded">
                       {language === "kn" ? "ಜನಪ್ರಿಯ" : "Popular"}
                     </Badge>
+                  </div>
+                  <div className="absolute top-3 right-3 z-10">
+                    <ShareButton articleId={news.id} title={t(news.title, news.title_en)} variant="overlay" iconSize={14} />
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <h3 className="text-accent-foreground text-base sm:text-lg font-bold leading-tight mb-2">

@@ -7,6 +7,7 @@ import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
 import SponsoredCard from "@/components/SponsoredCard";
 import ImageSlider from "@/components/ImageSlider";
+import ShareButton from "@/components/ShareButton";
 import { Clock } from "lucide-react";
 
 interface ArticleImage {
@@ -106,9 +107,12 @@ const ArticlePage = () => {
                 <h1 className="text-2xl md:text-3xl font-extrabold leading-tight text-card-foreground mt-2">
                   {t(article.title, article.title_en)}
                 </h1>
-                <div className="flex items-center gap-1.5 mt-3 text-muted-foreground text-sm">
-                  <Clock className="w-4 h-4" />
-                  <span>{formatTime(article.created_at)}</span>
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                    <Clock className="w-4 h-4" />
+                    <span>{formatTime(article.created_at)}</span>
+                  </div>
+                  <ShareButton articleId={article.id} title={t(article.title, article.title_en)} variant="inline" iconSize={18} />
                 </div>
                 <div className="mt-6 text-foreground leading-relaxed whitespace-pre-wrap">
                   {t(article.description, article.description_en) || (language === "kn" ? "ವಿವರ ಲಭ್ಯವಿಲ್ಲ" : "No details available")}
