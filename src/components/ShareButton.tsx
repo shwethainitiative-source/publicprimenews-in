@@ -80,9 +80,7 @@ const ShareButton = ({
   const ref = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
 
-  const siteUrl = window.location.origin;
-  const articleUrl = `${siteUrl}/article/${articleId}`;
-  const shareUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/og-article?id=${articleId}`;
+  const articleUrl = `${window.location.origin}/article/${articleId}`;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -93,13 +91,13 @@ const ShareButton = ({
   }, [open]);
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(shareUrl);
+    await navigator.clipboard.writeText(articleUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShare = (getUrl: (url: string, title: string) => string) => {
-    window.open(getUrl(shareUrl, title), "_blank", "noopener,noreferrer");
+    window.open(getUrl(articleUrl, title), "_blank", "noopener,noreferrer");
     setOpen(false);
   };
 
