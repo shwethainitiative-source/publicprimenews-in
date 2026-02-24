@@ -89,6 +89,7 @@ const CategoryPage = () => {
       let query = supabase
         .from("articles")
         .select("id, title, title_en, description, description_en, thumbnail_url, youtube_url, created_at, category_id", { count: "exact" })
+        .neq("status", "draft")
         .order("created_at", { ascending: false })
         .range(from, from + PAGE_SIZE - 1);
 
@@ -123,6 +124,7 @@ const CategoryPage = () => {
       let query = supabase
         .from("articles")
         .select("id, title, title_en, description, description_en, thumbnail_url, youtube_url, created_at, category_id", { count: "exact" })
+        .neq("status", "draft")
         .order("created_at", { ascending: false })
         .range(from, from + PAGE_SIZE - 1);
       if (categoryId) query = query.eq("category_id", categoryId);

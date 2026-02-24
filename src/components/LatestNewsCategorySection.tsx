@@ -39,6 +39,7 @@ const LatestNewsCategorySection = () => {
     supabase
       .from("articles")
       .select("id, title, title_en, thumbnail_url, youtube_url, created_at")
+      .neq("status", "draft")
       .order("created_at", { ascending: false })
       .limit(4)
       .then(({ data }) => setLatestNews((data as Article[]) ?? []));
@@ -57,6 +58,7 @@ const LatestNewsCategorySection = () => {
             .from("articles")
             .select("id, title, title_en, thumbnail_url, youtube_url, created_at")
             .eq("category_id", cats[0].id)
+            .neq("status", "draft")
             .order("created_at", { ascending: false })
             .limit(1);
           results.push({
