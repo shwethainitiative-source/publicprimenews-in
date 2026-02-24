@@ -127,7 +127,28 @@ const ShareButton = ({
             e.preventDefault();
             e.stopPropagation();
           }}
-          className="absolute right-0 top-full mt-2 z-50 bg-popover border border-border rounded-xl shadow-xl p-3 w-56 animate-in fade-in-0 zoom-in-95"
+          className="fixed z-[9999] bg-popover border border-border rounded-xl shadow-xl p-3 w-56 animate-in fade-in-0 zoom-in-95"
+          style={{
+            top: (() => {
+              const rect = ref.current?.getBoundingClientRect();
+              if (!rect) return 0;
+              const popupHeight = 160;
+              const bottom = rect.bottom + 8;
+              if (bottom + popupHeight > window.innerHeight) {
+                return rect.top - popupHeight - 8;
+              }
+              return bottom;
+            })(),
+            left: (() => {
+              const rect = ref.current?.getBoundingClientRect();
+              if (!rect) return 0;
+              const popupWidth = 224; // w-56 = 14rem = 224px
+              let left = rect.right - popupWidth;
+              if (left < 8) left = 8;
+              if (left + popupWidth > window.innerWidth - 8) left = window.innerWidth - popupWidth - 8;
+              return left;
+            })(),
+          }}
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-foreground">
