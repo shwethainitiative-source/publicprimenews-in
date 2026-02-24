@@ -158,6 +158,7 @@ export type Database = {
           is_featured: boolean
           is_main: boolean
           is_popular: boolean
+          status: string
           tags: string[] | null
           thumbnail_url: string | null
           title: string
@@ -178,6 +179,7 @@ export type Database = {
           is_featured?: boolean
           is_main?: boolean
           is_popular?: boolean
+          status?: string
           tags?: string[] | null
           thumbnail_url?: string | null
           title: string
@@ -198,6 +200,7 @@ export type Database = {
           is_featured?: boolean
           is_main?: boolean
           is_popular?: boolean
+          status?: string
           tags?: string[] | null
           thumbnail_url?: string | null
           title?: string
