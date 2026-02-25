@@ -24,7 +24,7 @@ const BreakingNewsTicker = () => {
       });
   }, [language]);
 
-  const repeatedItems = [...items, ...items];
+  const repeatedItems = [...items, ...items, ...items];
 
   return (
     <div className="bg-ticker text-ticker-foreground flex items-center overflow-hidden">
