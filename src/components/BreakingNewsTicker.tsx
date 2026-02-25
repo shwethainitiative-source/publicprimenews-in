@@ -29,7 +29,7 @@ const BreakingNewsTicker = () => {
   return (
     <div className="bg-ticker text-ticker-foreground flex items-center overflow-hidden">
       <div className="bg-primary px-4 py-2 font-bold text-sm whitespace-nowrap shrink-0 z-10">
-        {language === "kn" ? "ಬ್ರೇಕಿಂಗ್ ನ್ಯೂಸ್" : "Breaking News"}
+        Breaking News
       </div>
       <div className="overflow-hidden flex-1">
         <div className="animate-ticker flex whitespace-nowrap">
