@@ -147,6 +147,8 @@ export type Database = {
       articles: {
         Row: {
           article_type: string
+          author_name: string | null
+          author_photo_url: string | null
           category_id: string | null
           created_at: string
           created_by: string | null
@@ -168,6 +170,8 @@ export type Database = {
         }
         Insert: {
           article_type?: string
+          author_name?: string | null
+          author_photo_url?: string | null
           category_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -189,6 +193,8 @@ export type Database = {
         }
         Update: {
           article_type?: string
+          author_name?: string | null
+          author_photo_url?: string | null
           category_id?: string | null
           created_at?: string
           created_by?: string | null

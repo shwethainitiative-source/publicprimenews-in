@@ -27,6 +27,8 @@ interface Article {
   description_en: string | null;
   thumbnail_url: string | null;
   created_at: string;
+  author_name: string | null;
+  author_photo_url: string | null;
   categories?: { name: string } | null;
 }
 
@@ -43,7 +45,7 @@ const ArticlePage = () => {
     Promise.all([
       supabase
         .from("articles")
-        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, categories(name)")
+        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, author_name, author_photo_url, categories(name)")
         .eq("id", id)
         .single(),
       supabase
@@ -164,10 +166,25 @@ const ArticlePage = () => {
                 <h1 className="text-2xl md:text-3xl font-extrabold leading-tight text-card-foreground mt-2">
                   {t(article.title, article.title_en)}
                 </h1>
-                <div className="flex items-center justify-between mt-3">
-                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
-                    <Clock className="w-4 h-4" />
-                    <span>{formatTime(article.created_at)}</span>
+
+                {/* Author Section */}
+                <div className="flex items-center gap-3 mt-4">
+                  <img
+                    src={article.author_photo_url || "/placeholder.svg"}
+                    alt={article.author_name || "Author"}
+                    className="w-10 h-10 rounded-full object-cover border border-border flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      By
+                    </p>
+                    <p className="text-sm font-bold text-card-foreground" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700 }}>
+                      {article.author_name || "Public Prime News"}
+                    </p>
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-0.5" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>{formatTime(article.created_at)}</span>
+                    </div>
                   </div>
                   <ShareButton articleId={article.id} title={t(article.title, article.title_en)} variant="inline" iconSize={18} />
                 </div>
