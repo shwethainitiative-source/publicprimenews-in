@@ -118,6 +118,12 @@
   animation: ticker-scroll 15s linear infinite;
 }
 
+@media (max-width: 767px) {
+  .animate-ticker {
+    animation-duration: 8s;
+  }
+}
+
 @keyframes pulse-live {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
