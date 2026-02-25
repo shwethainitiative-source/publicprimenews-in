@@ -33,7 +33,7 @@ const AdminSidebar = ({ open, onClose }: Props) => {
       <aside className={`fixed top-0 left-0 z-50 h-full w-64 bg-card border-r border-border flex flex-col transition-transform lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="p-4 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-primary">ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್</h2>
+            <h2 className="text-lg font-bold text-primary">ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್ ನ್ಯೂಸ್</h2>
             <p className="text-xs text-muted-foreground">Admin Portal</p>
           </div>
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={onClose}>

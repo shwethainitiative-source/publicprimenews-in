@@ -22,7 +22,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <h3 className="text-xl font-extrabold mb-3">ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್</h3>
+            <h3 className="text-xl font-extrabold mb-3">ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್ ನ್ಯೂಸ್</h3>
             <p className="text-nav-foreground/70 text-sm leading-relaxed">
               ಕರ್ನಾಟಕದ ವಿಶ್ವಾಸಾರ್ಹ ಡಿಜಿಟಲ್ ಸುದ್ದಿ ಮಾಧ್ಯಮ. ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ ಎಲ್ಲಾ ಸುದ್ದಿಗಳನ್ನು ನಿಮಗೆ ತಲುಪಿಸುವ ನಂಬಿಕೆಯ ಪೋರ್ಟಲ್.
             </p>
@@ -100,7 +100,7 @@ const Footer = () => {
       {/* Bottom bar */}
       <Separator className="bg-nav-foreground/20" />
       <div className="container mx-auto px-4 py-4 text-center text-xs text-nav-foreground/50">
-        © {new Date().getFullYear()} ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.
+        © {new Date().getFullYear()} ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್ ನ್ಯೂಸ್. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.
       </div>
     </footer>
   );
