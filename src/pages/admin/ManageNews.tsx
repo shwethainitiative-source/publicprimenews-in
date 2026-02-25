@@ -22,6 +22,7 @@ const emptyForm = {
   category_id: "", tags: "", youtube_url: "",
   home_position: "none", article_type: "normal", is_breaking: false,
   status: "published" as string,
+  author_name: "Public Prime News", author_photo_url: "",
 };
 
 const ManageNews = () => {
@@ -81,6 +82,8 @@ const ManageNews = () => {
       is_main: f.home_position === "main",
       created_by: user?.id ?? null,
       status,
+      author_name: f.author_name || "Public Prime News",
+      author_photo_url: f.author_photo_url || null,
     };
   }, [user]);
 
@@ -202,6 +205,8 @@ const ManageNews = () => {
       home_position: a.home_position ?? "none", article_type: a.article_type ?? "normal",
       is_breaking: a.is_breaking ?? false,
       status: a.status ?? "published",
+      author_name: (a as any).author_name ?? "Public Prime News",
+      author_photo_url: (a as any).author_photo_url ?? "",
     });
     const { data: imgs } = await supabase
       .from("article_images").select("*").eq("article_id", a.id).order("sort_order");
@@ -328,6 +333,8 @@ const ManageNews = () => {
 
             <MultiImageUploader images={articleImages} onChange={updateImages} maxImages={3} showCoverBadge folderPrefix="articles/" />
 
+            <div><Label>Author Name</Label><Input value={form.author_name} onChange={e => updateForm({ author_name: e.target.value })} placeholder="Public Prime News" /></div>
+            <div><Label>Author Photo URL</Label><Input value={form.author_photo_url} onChange={e => updateForm({ author_photo_url: e.target.value })} placeholder="https://... (optional)" /></div>
             <div><Label>YouTube Video URL (optional)</Label><Input value={form.youtube_url} onChange={e => updateForm({ youtube_url: e.target.value })} placeholder="https://youtube.com/watch?v=..." /></div>
             <div><Label>Article Type</Label>
               <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.article_type} onChange={e => updateForm({ article_type: e.target.value })}>
