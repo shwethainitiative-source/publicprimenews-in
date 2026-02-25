@@ -28,7 +28,7 @@ const QuoteLine = () => {
     <div className="bg-quote text-quote-foreground">
       <div className="container mx-auto px-4 py-2 flex items-center gap-3">
         <Quote className="w-4 h-4 flex-shrink-0 text-primary" />
-        <p className="text-sm font-medium italic truncate">
+        <p className="text-sm font-medium italic truncate md:truncate md:whitespace-nowrap whitespace-normal md:overflow-hidden overflow-visible line-clamp-none">
           "{quote.quote_text}" — <span className="font-semibold not-italic">{quote.author || "Unknown"}</span>
         </p>
       </div>
