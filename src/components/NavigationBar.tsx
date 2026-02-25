@@ -81,7 +81,7 @@ const NavigationBar = () => {
         </div>
 
         {/* Desktop menu */}
-        <ul className="hidden md:flex items-center gap-0 text-[clamp(0.65rem,1.1vw,0.875rem)] font-medium flex-wrap">
+        <ul className="hidden md:flex items-center gap-0 text-[clamp(0.65rem,1.1vw,0.875rem)] font-bold flex-wrap">
           {menuItems.map((item) => (
             <li key={item.labelKn} className="relative group">
               {item.children ? (
@@ -117,7 +117,7 @@ const NavigationBar = () => {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <ul className="md:hidden pb-3 space-y-1 text-sm">
+          <ul className="md:hidden pb-3 space-y-1 text-sm font-bold">
             {menuItems.map((item) => (
               <li key={item.labelKn}>
                 {item.children ? (
