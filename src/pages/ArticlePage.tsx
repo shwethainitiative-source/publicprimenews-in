@@ -186,9 +186,12 @@ const ArticlePage = () => {
                   </div>
                   <ShareButton articleId={article.id} title={t(article.title, article.title_en)} variant="inline" iconSize={18} />
                 </div>
-                <div className="mt-6 text-foreground leading-relaxed whitespace-pre-wrap">
-                  {t(article.description, article.description_en) || (language === "kn" ? "ವಿವರ ಲಭ್ಯವಿಲ್ಲ" : "No details available")}
-                </div>
+                <div
+                  className="mt-6 text-foreground leading-relaxed prose prose-sm max-w-none [&>*]:my-1"
+                  dangerouslySetInnerHTML={{
+                    __html: t(article.description, article.description_en) || (language === "kn" ? "ವಿವರ ಲಭ್ಯವಿಲ್ಲ" : "No details available"),
+                  }}
+                />
 
                 {/* Gallery Images (images 2 & 3) */}
                 {galleryImages.length > 0 && (
