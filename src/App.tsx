@@ -14,6 +14,7 @@ import GalleryPage from "./pages/GalleryPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import WriteForUsPage from "./pages/WriteForUsPage";
 import NotFound from "./pages/NotFound";
+import WhatsAppFloat from "./components/WhatsAppFloat";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
@@ -64,6 +65,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <WhatsAppFloat />
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
