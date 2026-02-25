@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, GripVertical, Image as ImageIcon } from "lucide-react";
+import ImageCropDialog, { type CropResult } from "./ImageCropDialog";
 
 export interface ImageItem {
   id?: string;
@@ -25,6 +26,12 @@ interface MultiImageUploaderProps {
   folderPrefix?: string;
 }
 
+interface PendingFile {
+  file: File;
+  previewUrl: string;
+  originalName: string;
+}
+
 const MultiImageUploader = ({
   images,
   onChange,
@@ -36,21 +43,74 @@ const MultiImageUploader = ({
   const [uploading, setUploading] = useState(false);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
+  // Crop state
+  const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
+  const [cropIndex, setCropIndex] = useState<number>(-1);
+  const [cropSrc, setCropSrc] = useState("");
+  const [cropFileName, setCropFileName] = useState("");
+  const [processedFiles, setProcessedFiles] = useState<File[]>([]);
 
-    const remaining = maxImages - images.length;
-    if (remaining <= 0) {
-      toast({ title: `Maximum ${maxImages} images allowed`, variant: "destructive" });
-      return;
+  const startCropFlow = (files: File[]) => {
+    const pending = files.map((f) => ({
+      file: f,
+      previewUrl: URL.createObjectURL(f),
+      originalName: f.name,
+    }));
+    setPendingFiles(pending);
+    setProcessedFiles([]);
+    // Start cropping the first file
+    setCropIndex(0);
+    setCropSrc(pending[0].previewUrl);
+    setCropFileName(pending[0].originalName);
+  };
+
+  const handleCropDone = async (result: CropResult) => {
+    const newProcessed = [...processedFiles, result.file];
+    setProcessedFiles(newProcessed);
+    const nextIdx = cropIndex + 1;
+
+    if (nextIdx < pendingFiles.length) {
+      // Move to next file
+      setCropIndex(nextIdx);
+      setCropSrc(pendingFiles[nextIdx].previewUrl);
+      setCropFileName(pendingFiles[nextIdx].originalName);
+    } else {
+      // All done, upload all processed files
+      setCropIndex(-1);
+      await uploadFiles(newProcessed);
+      cleanupPending();
     }
-    const toUpload = files.slice(0, remaining);
+  };
 
+  const handleCropSkip = async () => {
+    // Use original file
+    const original = pendingFiles[cropIndex].file;
+    const newProcessed = [...processedFiles, original];
+    setProcessedFiles(newProcessed);
+    const nextIdx = cropIndex + 1;
+
+    if (nextIdx < pendingFiles.length) {
+      setCropIndex(nextIdx);
+      setCropSrc(pendingFiles[nextIdx].previewUrl);
+      setCropFileName(pendingFiles[nextIdx].originalName);
+    } else {
+      setCropIndex(-1);
+      await uploadFiles(newProcessed);
+      cleanupPending();
+    }
+  };
+
+  const cleanupPending = () => {
+    pendingFiles.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+    setPendingFiles([]);
+    setProcessedFiles([]);
+  };
+
+  const uploadFiles = async (files: File[]) => {
     setUploading(true);
     const newImages: ImageItem[] = [];
 
-    for (const file of toUpload) {
+    for (const file of files) {
       const ext = file.name.split(".").pop();
       const path = `${folderPrefix}${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error } = await supabase.storage.from(bucket).upload(path, file);
@@ -70,6 +130,19 @@ const MultiImageUploader = ({
 
     onChange([...images, ...newImages]);
     setUploading(false);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const remaining = maxImages - images.length;
+    if (remaining <= 0) {
+      toast({ title: `Maximum ${maxImages} images allowed`, variant: "destructive" });
+      return;
+    }
+    const toProcess = files.slice(0, remaining);
+    startCropFlow(toProcess);
     e.target.value = "";
   };
 
@@ -176,6 +249,17 @@ const MultiImageUploader = ({
           </div>
         ))}
       </div>
+
+      {/* Crop Dialog */}
+      {cropIndex >= 0 && (
+        <ImageCropDialog
+          open={true}
+          imageSrc={cropSrc}
+          fileName={cropFileName}
+          onClose={handleCropSkip}
+          onCropDone={handleCropDone}
+        />
+      )}
     </div>
   );
 };
