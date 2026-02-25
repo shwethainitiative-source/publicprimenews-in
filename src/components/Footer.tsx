@@ -100,7 +100,8 @@ const Footer = () => {
       {/* Bottom bar */}
       <Separator className="bg-nav-foreground/20" />
       <div className="container mx-auto px-4 py-4 text-center text-xs text-nav-foreground/50">
-        © {new Date().getFullYear()} ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್ ನ್ಯೂಸ್. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.
+        <p>© {new Date().getFullYear()} ಪಬ್ಲಿಕ್ ಪ್ರೈಮ್ ನ್ಯೂಸ್. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</p>
+        <p className="mt-1">Developed by <a href="https://www.shwethainitiative.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">Shwetha Initiative</a></p>
       </div>
     </footer>
   );
