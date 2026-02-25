@@ -175,11 +175,9 @@ const ArticlePage = () => {
                     className="w-10 h-10 rounded-full object-cover border border-border flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-muted-foreground" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      By
-                    </p>
-                    <p className="text-sm font-bold text-card-foreground" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700 }}>
-                      {article.author_name || "Public Prime News"}
+                    <p className="text-sm text-card-foreground" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <span className="text-xs text-muted-foreground font-normal">By </span>
+                      <span className="font-bold">{article.author_name || "Public Prime News"}</span>
                     </p>
                     <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-0.5" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       <Clock className="w-3.5 h-3.5" />
