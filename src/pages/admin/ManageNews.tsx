@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import SimpleRichEditor from "@/components/admin/SimpleRichEditor";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
@@ -321,8 +321,8 @@ const ManageNews = () => {
           <div className="space-y-4">
             <div><Label>Title - ಕನ್ನಡ (ಶೀರ್ಷಿಕೆ)</Label><Input value={form.title} onChange={e => updateForm({ title: e.target.value })} /></div>
             <div><Label>Title - English</Label><Input value={form.title_en} onChange={e => updateForm({ title_en: e.target.value })} placeholder="English title (optional)" /></div>
-            <div><Label>Description - ಕನ್ನಡ (ವಿವರಣೆ)</Label><Textarea rows={3} value={form.description} onChange={e => updateForm({ description: e.target.value })} /></div>
-            <div><Label>Description - English</Label><Textarea rows={3} value={form.description_en} onChange={e => updateForm({ description_en: e.target.value })} placeholder="English description (optional)" /></div>
+            <div><Label>Description - ಕನ್ನಡ (ವಿವರಣೆ)</Label><SimpleRichEditor rows={3} value={form.description} onChange={v => updateForm({ description: v })} /></div>
+            <div><Label>Description - English</Label><SimpleRichEditor rows={3} value={form.description_en} onChange={v => updateForm({ description_en: v })} placeholder="English description (optional)" /></div>
             <div><Label>Category</Label>
               <select className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background" value={form.category_id} onChange={e => updateForm({ category_id: e.target.value })}>
                 <option value="">Select category</option>
