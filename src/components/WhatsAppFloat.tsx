@@ -1,6 +1,12 @@
+import { useLocation } from "react-router-dom";
+
 const WHATSAPP_LINK = "https://chat.whatsapp.com/E8LvXzXs41aLYNWPtrpuTD?mode=gi_t";
 
 const WhatsAppFloat = () => {
+  const { pathname } = useLocation();
+
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <a
       href={WHATSAPP_LINK}
