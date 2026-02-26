@@ -19,7 +19,6 @@ const platforms = [
       </svg>
     ),
     color: "bg-[#25D366] hover:bg-[#1da851]",
-    useArticleUrl: true,
     getUrl: (url: string, title: string) =>
       `https://wa.me/?text=${encodeURIComponent(title + "\n" + url)}`,
   },
@@ -100,8 +99,7 @@ const ShareButton = ({
   };
 
   const handleShare = (platform: typeof platforms[number]) => {
-    const shareUrl = platform.useArticleUrl ? articleUrl : ogUrl;
-    window.open(platform.getUrl(shareUrl, title), "_blank", "noopener,noreferrer");
+    window.open(platform.getUrl(ogUrl, title), "_blank", "noopener,noreferrer");
     setOpen(false);
   };
 
