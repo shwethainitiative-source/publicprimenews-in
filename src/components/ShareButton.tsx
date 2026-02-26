@@ -19,6 +19,7 @@ const platforms = [
       </svg>
     ),
     color: "bg-[#25D366] hover:bg-[#1da851]",
+    useArticleUrl: true,
     getUrl: (url: string, title: string) =>
       `https://wa.me/?text=${encodeURIComponent(title + "\n" + url)}`,
   },
@@ -98,8 +99,9 @@ const ShareButton = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleShare = (getUrl: (url: string, title: string) => string) => {
-    window.open(getUrl(ogUrl, title), "_blank", "noopener,noreferrer");
+  const handleShare = (platform: typeof platforms[number]) => {
+    const shareUrl = platform.useArticleUrl ? articleUrl : ogUrl;
+    window.open(platform.getUrl(shareUrl, title), "_blank", "noopener,noreferrer");
     setOpen(false);
   };
 
@@ -167,7 +169,7 @@ const ShareButton = ({
             {platforms.map((p) => (
               <button
                 key={p.name}
-                onClick={() => handleShare(p.getUrl)}
+                onClick={() => handleShare(p)}
                 className={`${p.color} text-white rounded-lg p-2 flex items-center justify-center transition-transform hover:scale-110`}
                 title={p.name}
               >

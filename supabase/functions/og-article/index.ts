@@ -6,6 +6,27 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const BOT_UA_REGEX = /(whatsapp|facebookexternalhit|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|bot|crawler|spider)/i;
+
+const toOptimizedOgImage = (imageUrl: string) => {
+  if (!imageUrl.includes("/storage/v1/object/public/")) return imageUrl;
+
+  try {
+    const parsed = new URL(imageUrl);
+    parsed.pathname = parsed.pathname.replace(
+      "/storage/v1/object/public/",
+      "/storage/v1/render/image/public/",
+    );
+    parsed.searchParams.set("width", "1200");
+    parsed.searchParams.set("height", "630");
+    parsed.searchParams.set("resize", "cover");
+    parsed.searchParams.set("quality", "80");
+    return parsed.toString();
+  } catch {
+    return imageUrl;
+  }
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -56,9 +77,23 @@ Deno.serve(async (req) => {
     .replace(/\s+/g, " ")
     .trim()
     .substring(0, 160);
-  const ogImage = imagesRes.data?.[0]?.image_url || article.thumbnail_url || "";
-  const siteUrl = "https://publicprimenews-in.lovable.app";
+  const rawOgImage = article.thumbnail_url || imagesRes.data?.[0]?.image_url || "";
+  const ogImage = toOptimizedOgImage(rawOgImage);
+  const siteUrl = "https://publicprimenews.in";
   const articleUrl = `${siteUrl}/article/${article.id}`;
+  const userAgent = req.headers.get("user-agent") || "";
+  const isCrawlerRequest = BOT_UA_REGEX.test(userAgent);
+
+  if (!isCrawlerRequest) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        ...corsHeaders,
+        Location: articleUrl,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
 
   const escHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -72,13 +107,17 @@ Deno.serve(async (req) => {
   <meta property="og:title" content="${escHtml(title)}" />
   <meta property="og:description" content="${escHtml(description)}" />
   <meta property="og:image" content="${escHtml(ogImage)}" />
+  <meta property="og:image:secure_url" content="${escHtml(ogImage)}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:url" content="${escHtml(articleUrl)}" />
   <meta property="og:site_name" content="Public Prime News" />
+  <link rel="canonical" href="${escHtml(articleUrl)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escHtml(title)}" />
   <meta name="twitter:description" content="${escHtml(description)}" />
   <meta name="twitter:image" content="${escHtml(ogImage)}" />
-  <script>window.location.replace("${articleUrl}");</script>
+  <meta http-equiv="refresh" content="0;url=${escHtml(articleUrl)}" />
 </head>
 <body>
   <p>Redirecting to <a href="${escHtml(articleUrl)}">${escHtml(title)}</a>...</p>
