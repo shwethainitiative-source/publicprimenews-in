@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { Bold, Italic, Underline } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,47 +13,43 @@ interface SimpleRichEditorProps {
 
 const SimpleRichEditor = ({ value, onChange, placeholder, rows = 3, className }: SimpleRichEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
+  const isInternalChange = useRef(false);
+
+  // Sync external value changes only (not our own edits)
+  useEffect(() => {
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
+    }
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value || "";
+    }
+  }, [value]);
+
+  const emitChange = useCallback(() => {
+    if (editorRef.current) {
+      isInternalChange.current = true;
+      onChange(editorRef.current.innerHTML);
+    }
+  }, [onChange]);
 
   const execCommand = useCallback((command: string) => {
     document.execCommand(command, false);
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
+    emitChange();
     editorRef.current?.focus();
-  }, [onChange]);
+  }, [emitChange]);
 
   const handleInput = useCallback(() => {
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  }, [onChange]);
+    emitChange();
+  }, [emitChange]);
 
-  // Ensure Enter creates <p> tags for consistent formatting
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      const selection = window.getSelection();
-      if (!selection || !selection.rangeCount) return;
-
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      const p = document.createElement("p");
-      p.appendChild(document.createElement("br"));
-      range.insertNode(p);
-
-      // Move cursor into the new paragraph
-      const newRange = document.createRange();
-      newRange.setStart(p, 0);
-      newRange.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
-
-      if (editorRef.current) {
-        onChange(editorRef.current.innerHTML);
-      }
+      document.execCommand("insertParagraph", false);
+      emitChange();
     }
-  }, [onChange]);
+  }, [emitChange]);
 
   return (
     <div className={cn("border border-input rounded-md bg-background", className)}>
@@ -71,11 +67,10 @@ const SimpleRichEditor = ({ value, onChange, placeholder, rows = 3, className }:
       <div
         ref={editorRef}
         contentEditable
-        className="px-3 py-2 text-sm min-h-[80px] focus:outline-none prose prose-sm max-w-none [&>p]:my-1 [&>div]:my-1 [&>br+br]:block"
+        className="px-3 py-2 text-sm min-h-[80px] focus:outline-none prose prose-sm max-w-none [&>p]:my-1 [&>div]:my-1"
         style={{ minHeight: `${(rows || 3) * 24}px` }}
         onInput={handleInput}
         onKeyDown={handleKeyDown}
-        dangerouslySetInnerHTML={{ __html: value }}
         data-placeholder={placeholder}
       />
     </div>
