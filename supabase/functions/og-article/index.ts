@@ -43,7 +43,19 @@ Deno.serve(async (req) => {
   }
 
   const title = article.title_en || article.title;
-  const description = (article.description_en || article.description || "").substring(0, 160);
+  const rawDesc = article.description_en || article.description || "";
+  // Strip HTML tags and decode entities, then truncate
+  const description = rawDesc
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim()
+    .substring(0, 160);
   const ogImage = imagesRes.data?.[0]?.image_url || article.thumbnail_url || "";
   const siteUrl = "https://publicprimenews-in.lovable.app";
   const articleUrl = `${siteUrl}/article/${article.id}`;
