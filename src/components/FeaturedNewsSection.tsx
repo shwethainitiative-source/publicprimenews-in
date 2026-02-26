@@ -46,30 +46,35 @@ const FeaturedNewsSection = () => {
   const [lightboxImage, setLightboxImage] = useState<{ title: string; image: string } | null>(null);
 
   useEffect(() => {
-    // Fetch featured articles (is_featured)
-    (supabase
-      .from("articles")
-      .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)") as any)
-      .eq("home_position", "featured")
-      .order("created_at", { ascending: false })
-      .limit(3)
-      .then(({ data }: any) => setFeaturedNews((data as any[]) ?? []));
+    const fetchAll = async () => {
+      try {
+        const [featuredRes, galleryRes, latestRes] = await Promise.all([
+          (supabase
+            .from("articles")
+            .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)") as any)
+            .eq("home_position", "featured")
+            .order("created_at", { ascending: false })
+            .limit(3),
+          supabase
+            .from("gallery_photos")
+            .select("id, image_url, caption, caption_en")
+            .order("sort_order")
+            .limit(4),
+          supabase
+            .from("articles")
+            .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)")
+            .order("created_at", { ascending: false })
+            .limit(5),
+        ]);
 
-    // Fetch gallery photos
-    supabase
-      .from("gallery_photos")
-      .select("id, image_url, caption, caption_en")
-      .order("sort_order")
-      .limit(4)
-      .then(({ data }) => setGallery(data ?? []));
-
-    // Fetch latest articles for right column
-    supabase
-      .from("articles")
-      .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)")
-      .order("created_at", { ascending: false })
-      .limit(5)
-      .then(({ data }) => setLatestNews((data as any[]) ?? []));
+        setFeaturedNews((featuredRes.data as any[]) ?? []);
+        setGallery(galleryRes.data ?? []);
+        setLatestNews((latestRes.data as any[]) ?? []);
+      } catch (err) {
+        console.error("Failed to fetch featured section:", err);
+      }
+    };
+    fetchAll();
   }, []);
 
   const formatTime = (dateStr: string) => {
