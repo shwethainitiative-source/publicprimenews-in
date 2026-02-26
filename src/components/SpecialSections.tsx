@@ -17,22 +17,26 @@ const SpecialSections = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const { data } = await (supabase
-        .from("articles")
-        .select("id, title, title_en, thumbnail_url") as any)
-        .eq("home_position", "main")
-        .order("created_at", { ascending: false })
-        .limit(7);
+      try {
+        const { data } = await (supabase
+          .from("articles")
+          .select("id, title, title_en, thumbnail_url") as any)
+          .eq("home_position", "main")
+          .order("created_at", { ascending: false })
+          .limit(7);
 
-      const articleItems: CardItem[] = (data ?? [])
-        .filter(a => a.thumbnail_url)
-        .map(a => ({
-          id: a.id, type: "article" as const, image_url: a.thumbnail_url!,
-          link: `/article/${a.id}`,
-          title: language === "kn" ? a.title : (a.title_en || a.title),
-        }));
+        const articleItems: CardItem[] = (data ?? [])
+          .filter((a: any) => a.thumbnail_url)
+          .map((a: any) => ({
+            id: a.id, type: "article" as const, image_url: a.thumbnail_url!,
+            link: `/article/${a.id}`,
+            title: language === "kn" ? a.title : (a.title_en || a.title),
+          }));
 
-      setItems(articleItems.slice(0, 7));
+        setItems(articleItems.slice(0, 7));
+      } catch (err) {
+        console.error("Failed to fetch special sections:", err);
+      }
     };
     fetchItems();
   }, [language]);

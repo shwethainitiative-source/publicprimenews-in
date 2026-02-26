@@ -27,36 +27,40 @@ const HeroSection = () => {
   const [featured, setFeatured] = useState<Article | null>(null);
   const [sideCards, setSideCards] = useState<Article[]>([]);
   const [latestNews, setLatestNews] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNews = async () => {
-      // Fetch 1 big card article (latest with home_position = 'big_card')
-      const { data: featuredData } = await (supabase
-        .from("articles")
-        .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, youtube_url, categories(name)") as any)
-        .eq("home_position", "big_card")
-        .order("created_at", { ascending: false })
-        .limit(1);
+      try {
+        const [featuredRes, sideRes, latestRes] = await Promise.all([
+          (supabase
+            .from("articles")
+            .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, youtube_url, categories(name)") as any)
+            .eq("home_position", "big_card")
+            .order("created_at", { ascending: false })
+            .limit(1),
+          (supabase
+            .from("articles")
+            .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
+            .eq("home_position", "featured")
+            .order("created_at", { ascending: false })
+            .limit(6),
+          (supabase
+            .from("articles")
+            .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
+            .eq("home_position", "latest_news")
+            .order("created_at", { ascending: false })
+            .limit(5),
+        ]);
 
-      if (featuredData?.[0]) setFeatured(featuredData[0] as Article);
-
-      const { data: sideData } = await (supabase
-        .from("articles")
-        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
-        .eq("home_position", "featured")
-        .order("created_at", { ascending: false })
-        .limit(6);
-
-      setSideCards((sideData as Article[]) ?? []);
-
-      const { data: latestData } = await (supabase
-        .from("articles")
-        .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
-        .eq("home_position", "latest_news")
-        .order("created_at", { ascending: false })
-        .limit(5);
-
-      setLatestNews((latestData as Article[]) ?? []);
+        if (featuredRes.data?.[0]) setFeatured(featuredRes.data[0] as Article);
+        setSideCards((sideRes.data as Article[]) ?? []);
+        setLatestNews((latestRes.data as Article[]) ?? []);
+      } catch (err) {
+        console.error("Failed to fetch hero news:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchNews();
@@ -71,6 +75,34 @@ const HeroSection = () => {
     const days = Math.floor(hours / 24);
     return language === "kn" ? `${days} ದಿನಗಳ ಹಿಂದೆ` : `${days}d ago`;
   };
+
+  if (loading) {
+    return (
+      <section className="container mx-auto px-4 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+          <div className="lg:col-span-2 flex flex-col gap-4">
+            <div className="rounded-lg bg-muted animate-pulse h-[340px]" />
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex gap-3">
+                  <div className="w-24 h-[72px] rounded bg-muted animate-pulse flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
+                    <div className="h-3 bg-muted animate-pulse rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-lg bg-muted animate-pulse min-h-[160px]" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="container mx-auto px-4 py-4">
@@ -91,7 +123,7 @@ const HeroSection = () => {
                   src={featured.thumbnail_url || (featured.youtube_url ? getYoutubeThumbnail(featured.youtube_url) : null) || "/placeholder.svg"}
                   alt={t(featured.title, featured.title_en)}
                   className="w-full h-[250px] md:h-[340px] object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
+                  fetchPriority="high"
                 />
                 <div className="absolute top-3 left-3 z-10">
                   <ShareButton articleId={featured.id} title={t(featured.title, featured.title_en)} variant="overlay" />
