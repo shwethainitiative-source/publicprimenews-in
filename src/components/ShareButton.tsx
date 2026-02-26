@@ -80,6 +80,8 @@ const ShareButton = ({
   const ref = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
 
+  // Use og-article edge function URL for external sharing (WhatsApp, Facebook, etc. don't execute JS)
+  const ogUrl = `https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/og-article?id=${articleId}`;
   const articleUrl = `${window.location.origin}/article/${articleId}`;
 
   useEffect(() => {
@@ -97,7 +99,7 @@ const ShareButton = ({
   };
 
   const handleShare = (getUrl: (url: string, title: string) => string) => {
-    window.open(getUrl(articleUrl, title), "_blank", "noopener,noreferrer");
+    window.open(getUrl(ogUrl, title), "_blank", "noopener,noreferrer");
     setOpen(false);
   };
 
