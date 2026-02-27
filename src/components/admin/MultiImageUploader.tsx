@@ -108,28 +108,36 @@ const MultiImageUploader = ({
 
   const uploadFiles = async (files: File[]) => {
     setUploading(true);
-    const newImages: ImageItem[] = [];
+    try {
+      const newImages: ImageItem[] = [];
 
-    for (const file of files) {
-      const ext = file.name.split(".").pop();
-      const path = `${folderPrefix}${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from(bucket).upload(path, file);
-      if (error) {
-        toast({ title: "Upload failed", description: error.message, variant: "destructive" });
-        continue;
+      for (const file of files) {
+        const ext = file.name.split(".").pop();
+        const path = `${folderPrefix}${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await supabase.storage.from(bucket).upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+        if (error) {
+          toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+          continue;
+        }
+        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
+        newImages.push({
+          image_url: urlData.publicUrl,
+          caption: "",
+          caption_en: "",
+          sort_order: images.length + newImages.length,
+          is_cover: images.length === 0 && newImages.length === 0,
+        });
       }
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
-      newImages.push({
-        image_url: urlData.publicUrl,
-        caption: "",
-        caption_en: "",
-        sort_order: images.length + newImages.length,
-        is_cover: images.length === 0 && newImages.length === 0,
-      });
-    }
 
-    onChange([...images, ...newImages]);
-    setUploading(false);
+      onChange([...images, ...newImages]);
+    } catch (err: any) {
+      toast({ title: "Upload error", description: err?.message || "Something went wrong", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
