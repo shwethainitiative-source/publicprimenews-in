@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import logoImage from "@/assets/prime-logo-white.png";
+import logoImage from "@/assets/prime-logo-kannada.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -38,7 +38,7 @@ const HeaderBar = () => {
           <img
             src={logoSrc}
             alt="Public Prime News"
-            className="h-12 md:h-16 w-auto object-contain"
+            className="h-16 md:h-20 w-auto object-contain"
           />
           <p className="text-[10px] md:text-xs text-white/70 tracking-[0.2em] mt-1 font-bold">
             Clear Vision, True Mission
