@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Share2, X, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getPublicArticleUrl } from "@/lib/articleUrl";
 
 interface ShareButtonProps {
   articleId: string;
@@ -19,8 +20,8 @@ const platforms = [
       </svg>
     ),
     color: "bg-[#25D366] hover:bg-[#1da851]",
-    getUrl: (url: string, title: string) =>
-      `https://wa.me/?text=${encodeURIComponent(title + "\n" + url)}`,
+    getUrl: (url: string) =>
+      `https://wa.me/?text=${encodeURIComponent(url)}`,
   },
   {
     name: "Facebook",
@@ -80,9 +81,7 @@ const ShareButton = ({
   const ref = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
 
-  // Use og-article edge function URL for external sharing (WhatsApp, Facebook, etc. don't execute JS)
-  const ogUrl = `https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/og-article?id=${articleId}`;
-  const articleUrl = `${window.location.origin}/article/${articleId}`;
+  const articleUrl = getPublicArticleUrl(articleId, title);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -99,7 +98,7 @@ const ShareButton = ({
   };
 
   const handleShare = (platform: typeof platforms[number]) => {
-    window.open(platform.getUrl(ogUrl, title), "_blank", "noopener,noreferrer");
+    window.open(platform.getUrl(articleUrl, title), "_blank", "noopener,noreferrer");
     setOpen(false);
   };
 

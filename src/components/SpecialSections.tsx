@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getArticlePath } from "@/lib/articleUrl";
 
 interface CardItem {
   id: string;
@@ -29,7 +30,7 @@ const SpecialSections = () => {
           .filter((a: any) => a.thumbnail_url)
           .map((a: any) => ({
             id: a.id, type: "article" as const, image_url: a.thumbnail_url!,
-            link: `/article/${a.id}`,
+            link: getArticlePath(a.id, a.title_en || a.title),
             title: language === "kn" ? a.title : (a.title_en || a.title),
           }));
 

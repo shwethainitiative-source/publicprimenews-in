@@ -9,6 +9,7 @@ import SponsoredCard from "@/components/SponsoredCard";
 import ImageSlider from "@/components/ImageSlider";
 import ShareButton from "@/components/ShareButton";
 import { Clock } from "lucide-react";
+import { extractArticleIdFromParam, getPublicArticleUrl } from "@/lib/articleUrl";
 
 interface ArticleImage {
   id: string;
@@ -33,32 +34,33 @@ interface Article {
 }
 
 const ArticlePage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: articleParam } = useParams<{ id: string }>();
+  const articleId = articleParam ? extractArticleIdFromParam(articleParam) : "";
   const { language, t } = useLanguage();
   const [article, setArticle] = useState<Article | null>(null);
   const [images, setImages] = useState<ArticleImage[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
+    if (!articleId) return;
     setLoading(true);
     Promise.all([
       supabase
         .from("articles")
         .select("id, title, title_en, description, description_en, thumbnail_url, created_at, author_name, author_photo_url, categories(name)")
-        .eq("id", id)
+        .eq("id", articleId)
         .single(),
       supabase
         .from("article_images")
         .select("*")
-        .eq("article_id", id)
+        .eq("article_id", articleId)
         .order("sort_order"),
     ]).then(([articleRes, imagesRes]) => {
       setArticle(articleRes.data as Article | null);
       setImages((imagesRes.data as ArticleImage[]) ?? []);
       setLoading(false);
     });
-  }, [id]);
+  }, [articleId]);
 
   // Dynamic OG meta tags
   useEffect(() => {
@@ -66,9 +68,13 @@ const ArticlePage = () => {
 
     const title = language === "kn" ? article.title : (article.title_en || article.title);
     const description = (language === "kn" ? article.description : (article.description_en || article.description)) || "";
-    const shortDesc = description.substring(0, 160);
+    const shortDesc = description
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .substring(0, 160);
     const ogImage = images[0]?.image_url || article.thumbnail_url || "";
-    const articleUrl = `${window.location.origin}/article/${article.id}`;
+    const articleUrl = getPublicArticleUrl(article.id, article.title_en || article.title);
 
     document.title = `${title} - Public Prime News`;
 
@@ -76,6 +82,9 @@ const ArticlePage = () => {
       "og:title": title,
       "og:description": shortDesc,
       "og:image": ogImage,
+      "og:image:secure_url": ogImage,
+      "og:image:width": "1200",
+      "og:image:height": "630",
       "og:url": articleUrl,
       "og:type": "article",
       "twitter:card": "summary_large_image",
@@ -95,7 +104,18 @@ const ArticlePage = () => {
       el.setAttribute("content", content);
     };
 
+    const setCanonical = (href: string) => {
+      let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        document.head.appendChild(canonical);
+      }
+      canonical.href = href;
+    };
+
     Object.entries(metaTags).forEach(([key, val]) => setMeta(key, val));
+    setCanonical(articleUrl);
 
     // Also update description meta
     let descMeta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
@@ -110,10 +130,11 @@ const ArticlePage = () => {
         "og:type": "website",
       };
       Object.entries(defaults).forEach(([key, val]) => setMeta(key, val));
-      ["og:image", "og:url", "twitter:title", "twitter:description", "twitter:image"].forEach((key) => {
+      ["og:image", "og:image:secure_url", "og:image:width", "og:image:height", "og:url", "twitter:title", "twitter:description", "twitter:image"].forEach((key) => {
         const attr = key.startsWith("twitter:") ? "name" : "property";
         document.querySelector(`meta[${attr}="${key}"]`)?.removeAttribute("content");
       });
+      document.querySelector('link[rel="canonical"]')?.setAttribute("href", "https://publicprimenews.in/");
     };
   }, [article, images, language]);
 
