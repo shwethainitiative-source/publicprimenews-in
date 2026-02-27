@@ -1,16 +1,15 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 const BOT_UA_REGEX = /(whatsapp|facebookexternalhit|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|bot|crawler|spider)/i;
 
 const toOptimizedOgImage = (imageUrl: string) => {
   if (!imageUrl.includes("/storage/v1/object/public/")) return imageUrl;
-
   try {
     const parsed = new URL(imageUrl);
     parsed.pathname = parsed.pathname.replace(
@@ -27,7 +26,7 @@ const toOptimizedOgImage = (imageUrl: string) => {
   }
 };
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -43,7 +42,6 @@ Deno.serve(async (req) => {
   const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Fetch article and its images in parallel
   const [articleRes, imagesRes] = await Promise.all([
     supabase
       .from("articles")
@@ -65,7 +63,6 @@ Deno.serve(async (req) => {
 
   const title = article.title_en || article.title;
   const rawDesc = article.description_en || article.description || "";
-  // Strip HTML tags and decode entities, then truncate
   const description = rawDesc
     .replace(/<[^>]*>/g, "")
     .replace(/&nbsp;/g, " ")
@@ -77,7 +74,8 @@ Deno.serve(async (req) => {
     .replace(/\s+/g, " ")
     .trim()
     .substring(0, 160);
-  const rawOgImage = article.thumbnail_url || imagesRes.data?.[0]?.image_url || "";
+
+  const rawOgImage = imagesRes.data?.[0]?.image_url || article.thumbnail_url || "";
   const ogImage = toOptimizedOgImage(rawOgImage);
   const siteUrl = "https://publicprimenews.in";
   const slugTitle = (title || "")
@@ -89,21 +87,19 @@ Deno.serve(async (req) => {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "") || "article";
   const articleUrl = `${siteUrl}/article/${slugTitle}-${article.id}`;
+
   const userAgent = req.headers.get("user-agent") || "";
   const isCrawlerRequest = BOT_UA_REGEX.test(userAgent);
 
   if (!isCrawlerRequest) {
     return new Response(null, {
       status: 302,
-      headers: {
-        ...corsHeaders,
-        Location: articleUrl,
-        "Cache-Control": "no-store",
-      },
+      headers: { ...corsHeaders, Location: articleUrl, "Cache-Control": "no-store" },
     });
   }
 
-  const escHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const escHtml = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
   const html = `<!DOCTYPE html>
 <html lang="en">
