@@ -80,7 +80,15 @@ Deno.serve(async (req) => {
   const rawOgImage = article.thumbnail_url || imagesRes.data?.[0]?.image_url || "";
   const ogImage = toOptimizedOgImage(rawOgImage);
   const siteUrl = "https://publicprimenews.in";
-  const articleUrl = `${siteUrl}/article/${article.id}`;
+  const slugTitle = (title || "")
+    .toLowerCase()
+    .trim()
+    .replace(/<[^>]*>/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "") || "article";
+  const articleUrl = `${siteUrl}/article/${slugTitle}-${article.id}`;
   const userAgent = req.headers.get("user-agent") || "";
   const isCrawlerRequest = BOT_UA_REGEX.test(userAgent);
 
