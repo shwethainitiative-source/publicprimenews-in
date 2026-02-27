@@ -17,9 +17,10 @@
  * - Normal user request → passes through to Lovable hosting (SPA)
  */
 
-const BOT_UA = /(whatsapp|facebookexternalhit|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|bot|crawler|spider|preview)/i;
+const BOT_UA =
+  /(whatsapp|facebookexternalhit|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|bot|crawler|spider|preview)/i;
 
-const SUPABASE_OG_FN = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/og-article";
+const SUPABASE_OG_FN = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/ogmeta";
 const SUPABASE_SITEMAP_FN = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/sitemap";
 
 // Extract UUID from /article/slug-uuid pattern
@@ -55,14 +56,11 @@ export default {
 
       if (articleId) {
         try {
-          const ogResponse = await fetch(
-            `${SUPABASE_OG_FN}?id=${articleId}`,
-            {
-              headers: {
-                "User-Agent": ua, // pass bot UA so edge function returns HTML
-              },
-            }
-          );
+          const ogResponse = await fetch(`${SUPABASE_OG_FN}?id=${articleId}`, {
+            headers: {
+              "User-Agent": ua, // pass bot UA so edge function returns HTML
+            },
+          });
           if (ogResponse.ok) {
             const html = await ogResponse.text();
             return new Response(html, {
