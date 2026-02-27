@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { getYoutubeEmbedUrl } from "@/lib/youtube";
 import VideoModal from "@/components/VideoModal";
 import { useState, ReactNode } from "react";
+import { getArticlePath } from "@/lib/articleUrl";
 
 interface ArticleLinkProps {
   articleId: string;
@@ -33,7 +33,7 @@ const ArticleLink = ({ articleId, youtubeUrl, title, children, className }: Arti
   }
 
   return (
-    <Link to={`/article/${articleId}`} className={className}>
+    <Link to={getArticlePath(articleId, title)} className={className}>
       {children}
     </Link>
   );
