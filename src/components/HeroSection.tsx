@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import AdSlider from "@/components/AdSlider";
 import ArticleLink from "@/components/ArticleLink";
-import ShareButton from "@/components/ShareButton";
+
 import { getYoutubeThumbnail } from "@/lib/youtube";
 
 interface Article {
@@ -127,9 +127,6 @@ const HeroSection = () => {
                   className="w-full h-[250px] md:h-[340px] object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   fetchPriority="high"
                 />
-                <div className="absolute top-3 left-3 z-10">
-                  <ShareButton articleId={featured.id} title={t(featured.title, featured.title_en)} variant="overlay" />
-                </div>
                 <div className="p-4">
                   <h2 className="text-card-foreground text-xl md:text-2xl font-extrabold leading-tight mb-2">
                     {t(featured.title, featured.title_en)}
@@ -199,9 +196,6 @@ const HeroSection = () => {
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute top-2 right-2 z-10">
-                    <ShareButton articleId={card.id} title={t(card.title, card.title_en)} variant="overlay" iconSize={14} />
-                  </div>
                   <div className="absolute bottom-0 left-0 right-0 p-2.5">
                     {card.categories?.name && (
                       <span className="text-white text-[10px] font-bold uppercase tracking-wider mb-1 block">
