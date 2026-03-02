@@ -37,18 +37,20 @@ const HeroSection = () => {
             .from("articles")
             .select("id, title, title_en, description, description_en, thumbnail_url, created_at, is_featured, category_id, article_type, youtube_url, categories(name)") as any)
             .eq("home_position", "big_card")
+            .eq("status", "published")
             .order("created_at", { ascending: false })
             .limit(1),
           (supabase
             .from("articles")
             .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
             .eq("home_position", "featured")
+            .eq("status", "published")
             .order("created_at", { ascending: false })
             .limit(6),
           (supabase
             .from("articles")
             .select("id, title, title_en, thumbnail_url, created_at, category_id, youtube_url, categories(name)") as any)
-            .eq("home_position", "latest_news")
+            .eq("status", "published")
             .order("created_at", { ascending: false })
             .limit(5),
         ]);

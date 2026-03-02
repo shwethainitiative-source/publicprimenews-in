@@ -23,6 +23,7 @@ const SpecialSections = () => {
           .from("articles")
           .select("id, title, title_en, thumbnail_url") as any)
           .eq("home_position", "main")
+          .eq("status", "published")
           .order("created_at", { ascending: false })
           .limit(7);
 

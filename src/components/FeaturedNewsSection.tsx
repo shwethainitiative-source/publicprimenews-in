@@ -53,6 +53,7 @@ const FeaturedNewsSection = () => {
             .from("articles")
             .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)") as any)
             .eq("home_position", "featured")
+            .eq("status", "published")
             .order("created_at", { ascending: false })
             .limit(3),
           supabase
@@ -63,6 +64,7 @@ const FeaturedNewsSection = () => {
           supabase
             .from("articles")
             .select("id, title, title_en, thumbnail_url, youtube_url, created_at, categories(name)")
+            .eq("status", "published")
             .order("created_at", { ascending: false })
             .limit(5),
         ]);
