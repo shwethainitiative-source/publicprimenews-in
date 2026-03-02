@@ -18,8 +18,11 @@ export const getArticlePath = (articleId: string, title?: string | null) => {
   return `/article/${slug}-${articleId}`;
 };
 
-export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
-  `${SITE_URL}${getArticlePath(articleId, title)}`;
+/** Use current origin so shared links work on any hosting domain */
+export const getPublicArticleUrl = (articleId: string, title?: string | null) => {
+  const origin = typeof window !== "undefined" ? window.location.origin : SITE_URL;
+  return `${origin}${getArticlePath(articleId, title)}`;
+};
 
 export const extractArticleIdFromParam = (param: string) => {
   if (!param) return "";
