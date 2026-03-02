@@ -7,7 +7,7 @@ import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
 import SponsoredCard from "@/components/SponsoredCard";
 import ImageSlider from "@/components/ImageSlider";
-
+import ArticleShareBar from "@/components/ArticleShareBar";
 import { Clock } from "lucide-react";
 import { extractArticleIdFromParam, getPublicArticleUrl } from "@/lib/articleUrl";
 
@@ -205,8 +205,8 @@ const ArticlePage = () => {
                       <span>{formatTime(article.created_at)}</span>
                     </div>
                   </div>
-                  
                 </div>
+                <ArticleShareBar articleId={article.id} title={t(article.title, article.title_en)} />
                 <div
                   className="mt-6 text-foreground leading-relaxed prose prose-sm max-w-none [&>*]:my-1"
                   dangerouslySetInnerHTML={{
