@@ -1,4 +1,5 @@
 const SITE_URL = "https://publicprimenews.in";
+const SHARE_META_FN = `https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta`;
 
 const UUID_EXACT_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_SUFFIX_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -23,6 +24,11 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
   const origin = typeof window !== "undefined" ? window.location.origin : SITE_URL;
   return `${origin}${getArticlePath(articleId, title)}`;
 };
+
+/** URL for social sharing — goes through the edge function so crawlers see OG tags.
+ *  Real users are 302-redirected to the article page. */
+export const getShareUrl = (articleId: string) =>
+  `${SHARE_META_FN}?id=${articleId}`;
 
 export const extractArticleIdFromParam = (param: string) => {
   if (!param) return "";

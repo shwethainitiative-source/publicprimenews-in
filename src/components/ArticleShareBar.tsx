@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Share2, Check, Copy } from "lucide-react";
-import { getPublicArticleUrl } from "@/lib/articleUrl";
+import { getPublicArticleUrl, getShareUrl } from "@/lib/articleUrl";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ArticleShareBarProps {
@@ -12,6 +12,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   const [copied, setCopied] = useState(false);
   const { language } = useLanguage();
   const articleUrl = getPublicArticleUrl(articleId, title);
+  const shareUrl = getShareUrl(articleId);
 
   const share = (url: string) =>
     window.open(url, "_blank", "noopener,noreferrer");
@@ -27,7 +28,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
       {/* WhatsApp */}
       <button
         onClick={() =>
-          share(`https://wa.me/?text=${encodeURIComponent(articleUrl)}`)
+          share(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`)
         }
         className="w-10 h-10 rounded-lg bg-[#25D366] hover:bg-[#1da851] text-white flex items-center justify-center transition-transform hover:scale-110"
         aria-label="Share on WhatsApp"
@@ -41,7 +42,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
       <button
         onClick={() =>
           share(
-            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`
+            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
           )
         }
         className="w-10 h-10 rounded-lg bg-[#1877F2] hover:bg-[#0d65d9] text-white flex items-center justify-center transition-transform hover:scale-110"
@@ -56,7 +57,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
       <button
         onClick={() =>
           share(
-            `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`
+            `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`
           )
         }
         className="w-10 h-10 rounded-lg bg-[#0A66C2] hover:bg-[#084e96] text-white flex items-center justify-center transition-transform hover:scale-110"

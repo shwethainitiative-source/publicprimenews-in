@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Share2, X, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getPublicArticleUrl } from "@/lib/articleUrl";
+import { getPublicArticleUrl, getShareUrl } from "@/lib/articleUrl";
 
 interface ShareButtonProps {
   articleId: string;
@@ -82,6 +82,7 @@ const ShareButton = ({
   const { language } = useLanguage();
 
   const articleUrl = getPublicArticleUrl(articleId, title);
+  const shareUrl = getShareUrl(articleId);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -98,7 +99,7 @@ const ShareButton = ({
   };
 
   const handleShare = (platform: typeof platforms[number]) => {
-    window.open(platform.getUrl(articleUrl, title), "_blank", "noopener,noreferrer");
+    window.open(platform.getUrl(shareUrl, title), "_blank", "noopener,noreferrer");
     setOpen(false);
   };
 
