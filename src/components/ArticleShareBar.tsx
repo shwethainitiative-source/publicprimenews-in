@@ -12,7 +12,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   const [copied, setCopied] = useState(false);
   const { language } = useLanguage();
   const articleUrl = getPublicArticleUrl(articleId, title);
-  const shareUrl = getShareUrl(articleId);
+  const shareUrl = getShareUrl(articleId, title);
 
   const share = (url: string) =>
     window.open(url, "_blank", "noopener,noreferrer");

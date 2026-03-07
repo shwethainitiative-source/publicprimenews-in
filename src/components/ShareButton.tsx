@@ -82,7 +82,7 @@ const ShareButton = ({
   const { language } = useLanguage();
 
   const articleUrl = getPublicArticleUrl(articleId, title);
-  const shareUrl = getShareUrl(articleId);
+  const shareUrl = getShareUrl(articleId, title);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {

@@ -25,10 +25,10 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
   return `${origin}${getArticlePath(articleId, title)}`;
 };
 
-/** URL for social sharing — goes through the edge function so crawlers see OG tags.
- *  Real users are 302-redirected to the article page. */
-export const getShareUrl = (articleId: string) =>
-  `${SHARE_META_FN}?id=${articleId}`;
+/** URL for social sharing — uses the public domain so Cloudflare Worker
+ *  intercepts bot requests and serves OG tags. */
+export const getShareUrl = (articleId: string, title?: string | null) =>
+  getPublicArticleUrl(articleId, title);
 
 export const extractArticleIdFromParam = (param: string) => {
   if (!param) return "";
