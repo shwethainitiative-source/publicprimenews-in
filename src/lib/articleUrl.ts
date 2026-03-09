@@ -25,10 +25,11 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
   return `${origin}${getArticlePath(articleId, title)}`;
 };
 
-/** URL for social sharing — ALWAYS uses the production domain so Cloudflare Worker
- *  intercepts bot requests and serves OG tags. Never use window.location.origin here. */
-export const getShareUrl = (articleId: string, title?: string | null) =>
-  `${SITE_URL}${getArticlePath(articleId, title)}`;
+/** URL for social sharing — goes through the edge function so crawlers get
+ *  article-specific OG tags. The og:url in the response points to publicprimenews.in
+ *  so WhatsApp displays the correct domain. Real users get 302-redirected to the article. */
+export const getShareUrl = (articleId: string, _title?: string | null) =>
+  `${SHARE_META_FN}?id=${articleId}`;
 
 export const extractArticleIdFromParam = (param: string) => {
   if (!param) return "";
