@@ -25,10 +25,10 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
   return `${origin}${getArticlePath(articleId, title)}`;
 };
 
-/** URL for social sharing — uses the public domain so Cloudflare Worker
- *  intercepts bot requests and serves OG tags. */
+/** URL for social sharing — ALWAYS uses the production domain so Cloudflare Worker
+ *  intercepts bot requests and serves OG tags. Never use window.location.origin here. */
 export const getShareUrl = (articleId: string, title?: string | null) =>
-  getPublicArticleUrl(articleId, title);
+  `${SITE_URL}${getArticlePath(articleId, title)}`;
 
 export const extractArticleIdFromParam = (param: string) => {
   if (!param) return "";
