@@ -42,10 +42,10 @@ const Footer = () => {
             <h3 className="text-lg font-bold mb-3">ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು</h3>
             <ul className="space-y-1.5">
               {quickLinks.map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-nav-foreground/70 text-sm hover:text-primary transition-colors">
-                    {link}
-                  </a>
+                <li key={link.label}>
+                  <Link to={link.path} className="text-nav-foreground/70 text-sm hover:text-primary transition-colors">
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
