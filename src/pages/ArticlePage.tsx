@@ -85,7 +85,23 @@ const ArticlePage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <HeaderBar />
+      {article && (
+        <Helmet>
+          <title>{ogTitle} | Public Prime News</title>
+          <meta name="description" content={ogDesc} />
+          <meta property="og:type" content="article" />
+          <meta property="og:title" content={ogTitle} />
+          <meta property="og:description" content={ogDesc} />
+          <meta property="og:image" content={ogImage} />
+          <meta property="og:url" content={ogUrl} />
+          <meta property="og:site_name" content="Public Prime News" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={ogTitle} />
+          <meta name="twitter:description" content={ogDesc} />
+          <meta name="twitter:image" content={ogImage} />
+          <link rel="canonical" href={ogUrl} />
+        </Helmet>
+      )}
       <NavigationBar />
       <main className="container mx-auto px-4 py-6">
         {loading ? (
