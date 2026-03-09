@@ -1,10 +1,19 @@
 import { Instagram, Facebook, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { Link } from "react-router-dom";
 
 const quickLinks = [
-  "ಮುಖಪುಟ", "ನಮ್ಮ ಬಗ್ಗೆ", "ಕನ್ನಡನಾಡಿ", "ಅಪರಾಧ ಲೋಕ", "ರಾಜಕೀಯ",
-  "ಶಿಕ್ಷಣ", "ವಿಶೇಷ ಲೇಖನಗಳು", "ಸಂದರ್ಶನಗಳು", "ಉದ್ಯೋಗ ಮಾಹಿತಿ", "ಫೋಟೊ ಗ್ಯಾಲರಿ",
+  { label: "ಮುಖಪುಟ", path: "/" },
+  { label: "ನಮ್ಮ ಬಗ್ಗೆ", path: "/about" },
+  { label: "ಕನ್ನಡನಾಡಿ", path: "/category/ಕನ್ನಡ ನಾಡಿ" },
+  { label: "ಅಪರಾಧ ಲೋಕ", path: "/category/ಅಪರಾಧ ಲೋಕ" },
+  { label: "ರಾಜಕೀಯ", path: "/category/ರಾಜಕೀಯ" },
+  { label: "ಶಿಕ್ಷಣ", path: "/category/ಶಿಕ್ಷಣ" },
+  { label: "ವಿಶೇಷ ಲೇಖನಗಳು", path: "/category/ವಿಶೇಷ ಲೇಖನಗಳು" },
+  { label: "ಸಂದರ್ಶನಗಳು", path: "/category/ಸಂದರ್ಶನಗಳು" },
+  { label: "ಉದ್ಯೋಗ ಮಾಹಿತಿ", path: "/jobs" },
+  { label: "ಫೋಟೊ ಗ್ಯಾಲರಿ", path: "/gallery" },
 ];
 
 const Footer = () => {
