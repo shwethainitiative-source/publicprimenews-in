@@ -1,35 +1,49 @@
 /**
  * Cloudflare Worker: OG Meta Proxy for publicprimenews.in
  *
- * This worker intercepts crawler/bot requests to article pages and
- * proxies them to the og-article edge function so that WhatsApp,
- * Facebook, Twitter etc. see article-specific title, description,
- * and thumbnail — while real users get the normal SPA.
- *
  * SETUP:
- * 1. Go to https://dash.cloudflare.com → add publicprimenews.in
- * 2. Change DNS nameservers to Cloudflare's (keep A record → 185.158.133.1)
- * 3. Workers & Pages → Create Worker → paste this script → Deploy
- * 4. Add route: publicprimenews.in/article/* → this worker
+ * 1. Go to https://dash.cloudflare.com → Workers & Pages → Create Worker
+ * 2. Paste this script → Deploy
+ * 3. Go to Workers Routes → Add Route:
+ *    Route pattern: publicprimenews.in/*
+ *    Worker: (select this worker)
+ *    Zone: publicprimenews.in
+ * 4. Also add: www.publicprimenews.in/*
  *
- * HOW IT WORKS:
- * - Bot/crawler request → fetches og-article edge function HTML (with OG tags)
- * - Normal user request → passes through to Lovable hosting (SPA)
+ * IMPORTANT: Route must be "publicprimenews.in/*" (with wildcard),
+ *            NOT "publicprimenews.in/article/*"
+ *
+ * TEST: Visit https://publicprimenews.in/og-test to verify the worker is active
  */
 
 const BOT_UA =
-  /(whatsapp|facebookexternalhit|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|bot|crawler|spider|preview)/i;
+  /whatsapp|facebookexternalhit|facebot|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|googlebot|bingbot|yandex|baiduspider|duckduckbot|pinterest|redditbot|applebot|embedly|quora|outbrain|showyoubot|vkshare|tumblr|skypeuripreview|nuzzel|w3c_validator|rogerbot|semrushbot/i;
 
 const SUPABASE_OG_FN = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta";
 const SUPABASE_SITEMAP_FN = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/sitemap";
 
-// Extract UUID from /article/slug-uuid pattern
-const UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default {
   async fetch(request) {
     const url = new URL(request.url);
     const ua = request.headers.get("user-agent") || "";
+
+    // Test endpoint to verify worker is active
+    if (url.pathname === "/og-test") {
+      return new Response(
+        JSON.stringify({
+          status: "Worker is active!",
+          timestamp: new Date().toISOString(),
+          ua: ua,
+          isBot: BOT_UA.test(ua),
+          path: url.pathname,
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
     // Serve dynamic sitemap.xml
     if (url.pathname === "/sitemap.xml") {
@@ -56,9 +70,10 @@ export default {
 
       if (articleId) {
         try {
-          const ogResponse = await fetch(`${SUPABASE_OG_FN}?id=${articleId}`, {
+          const ogUrl = `${SUPABASE_OG_FN}?id=${articleId}`;
+          const ogResponse = await fetch(ogUrl, {
             headers: {
-              "User-Agent": ua, // pass bot UA so edge function returns HTML
+              "User-Agent": ua,
             },
           });
           if (ogResponse.ok) {
@@ -76,7 +91,7 @@ export default {
       }
     }
 
-    // All other requests → pass through to Lovable hosting
+    // All other requests → pass through to origin
     return fetch(request);
   },
 };
