@@ -230,25 +230,30 @@ const ManageNews = () => {
     }
     setSaving(true);
 
-    const payload: any = buildPayload(form, saveStatus);
-    let articleId = editing?.id;
+    try {
+      const payload: any = buildPayload(form, saveStatus);
+      let articleId = editing?.id;
 
-    if (editing) {
-      const { error } = await supabase.from("articles").update(payload).eq("id", editing.id);
-      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); setSaving(false); return; }
-    } else {
-      const { data, error } = await supabase.from("articles").insert(payload).select("id").single();
-      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); setSaving(false); return; }
-      articleId = data.id;
+      if (editing) {
+        const { error } = await supabase.from("articles").update(payload).eq("id", editing.id);
+        if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+      } else {
+        const { data, error } = await supabase.from("articles").insert(payload).select("id").single();
+        if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+        articleId = data.id;
+      }
+
+      if (articleId) await saveImages(articleId);
+
+      hasUnsavedChanges.current = false;
+      toast({ title: saveStatus === "draft" ? "Saved as draft" : (editing ? "Article updated" : "Article published") });
+      setDialogOpen(false);
+      fetchData();
+    } catch (err: any) {
+      toast({ title: "Error", description: err?.message || "Something went wrong", variant: "destructive" });
+    } finally {
+      setSaving(false);
     }
-
-    if (articleId) await saveImages(articleId);
-
-    hasUnsavedChanges.current = false;
-    toast({ title: saveStatus === "draft" ? "Saved as draft" : (editing ? "Article updated" : "Article published") });
-    setSaving(false);
-    setDialogOpen(false);
-    fetchData();
   };
 
   const handleDelete = async (id: string) => {
