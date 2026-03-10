@@ -1,10 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Cropper, { Area } from "react-easy-crop";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Crop, RotateCw, ZoomIn } from "lucide-react";
+import { Crop, RotateCw, ZoomIn, X } from "lucide-react";
 
 export interface CropResult {
   file: File;
@@ -79,6 +78,10 @@ async function getCroppedImg(
   });
 }
 
+/**
+ * ImageCropDialog – rendered as a plain fixed overlay (NOT a Radix Dialog)
+ * to avoid nested-dialog conflicts when used inside another Dialog.
+ */
 const ImageCropDialog = ({
   open,
   imageSrc,
@@ -92,6 +95,18 @@ const ImageCropDialog = ({
   const [aspect, setAspect] = useState(16 / 9);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [processing, setProcessing] = useState(false);
+
+  // Reset state when a new image is opened
+  useEffect(() => {
+    if (open) {
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setRotation(0);
+      setAspect(16 / 9);
+      setCroppedAreaPixels(null);
+      setProcessing(false);
+    }
+  }, [open, imageSrc]);
 
   const onCropComplete = useCallback((_: Area, pixels: Area) => {
     setCroppedAreaPixels(pixels);
@@ -107,23 +122,38 @@ const ImageCropDialog = ({
       const previewUrl = URL.createObjectURL(blob);
       onCropDone({ file: croppedFile, previewUrl });
     } catch {
-      // fallback: use original
+      // fallback: skip crop, use original
+      onClose();
+    } finally {
+      setProcessing(false);
     }
-    setProcessing(false);
   };
 
-  const handleSkip = () => {
-    onClose();
-  };
+  if (!open) return null;
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-lg max-h-[95vh] overflow-y-auto p-4">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-sm">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center"
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80" onClick={onClose} />
+
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-lg max-h-[95vh] overflow-y-auto bg-background border rounded-lg shadow-lg p-4 mx-4 space-y-3">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
             <Crop className="w-4 h-4" /> Crop & Resize Image
-          </DialogTitle>
-        </DialogHeader>
+          </h3>
+          <button
+            onClick={onClose}
+            className="rounded-sm opacity-70 hover:opacity-100 focus:outline-none"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
 
         <div className="relative w-full h-64 bg-muted rounded-lg overflow-hidden">
           <Cropper
@@ -186,15 +216,15 @@ const ImageCropDialog = ({
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" className="flex-1" onClick={handleSkip}>
+          <Button variant="outline" className="flex-1" onClick={onClose}>
             Skip (Use Original)
           </Button>
           <Button className="flex-1" onClick={handleDone} disabled={processing}>
             {processing ? "Processing..." : "Apply Crop"}
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 

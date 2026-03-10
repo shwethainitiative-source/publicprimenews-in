@@ -196,29 +196,33 @@ const ManageNews = () => {
   };
 
   const openEdit = async (a: Article) => {
-    setEditing(a);
-    setForm({
-      title: a.title, title_en: a.title_en ?? "",
-      description: a.description ?? "", description_en: a.description_en ?? "",
-      category_id: a.category_id ?? "",
-      tags: (a.tags ?? []).join(", "), youtube_url: a.youtube_url ?? "",
-      home_position: a.home_position ?? "none", article_type: a.article_type ?? "normal",
-      is_breaking: a.is_breaking ?? false,
-      status: a.status ?? "published",
-      author_name: (a as any).author_name ?? "Public Prime News",
-      author_photo_url: (a as any).author_photo_url ?? "",
-    });
-    const { data: imgs } = await supabase
-      .from("article_images").select("*").eq("article_id", a.id).order("sort_order");
-    setArticleImages(
-      (imgs ?? []).map((img: any) => ({
-        id: img.id, image_url: img.image_url,
-        caption: img.caption ?? "", caption_en: img.caption_en ?? "",
-        sort_order: img.sort_order, is_cover: img.is_cover,
-      }))
-    );
-    hasUnsavedChanges.current = false;
-    setDialogOpen(true);
+    try {
+      setEditing(a);
+      setForm({
+        title: a.title, title_en: a.title_en ?? "",
+        description: a.description ?? "", description_en: a.description_en ?? "",
+        category_id: a.category_id ?? "",
+        tags: (a.tags ?? []).join(", "), youtube_url: a.youtube_url ?? "",
+        home_position: a.home_position ?? "none", article_type: a.article_type ?? "normal",
+        is_breaking: a.is_breaking ?? false,
+        status: a.status ?? "published",
+        author_name: (a as any).author_name ?? "Public Prime News",
+        author_photo_url: (a as any).author_photo_url ?? "",
+      });
+      const { data: imgs } = await supabase
+        .from("article_images").select("*").eq("article_id", a.id).order("sort_order");
+      setArticleImages(
+        (imgs ?? []).map((img: any) => ({
+          id: img.id, image_url: img.image_url,
+          caption: img.caption ?? "", caption_en: img.caption_en ?? "",
+          sort_order: img.sort_order, is_cover: img.is_cover,
+        }))
+      );
+      hasUnsavedChanges.current = false;
+      setDialogOpen(true);
+    } catch (err: any) {
+      toast({ title: "Failed to load article", description: err?.message, variant: "destructive" });
+    }
   };
 
   const handleSave = async (saveStatus: string) => {
