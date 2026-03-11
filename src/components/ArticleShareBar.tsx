@@ -18,7 +18,8 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
     window.open(url, "_blank", "noopener,noreferrer");
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(articleUrl);
+    // Copy the share URL so WhatsApp/Facebook generate correct previews.
+    await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

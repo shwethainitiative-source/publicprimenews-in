@@ -93,7 +93,8 @@ const ShareButton = ({
   }, [open]);
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(articleUrl);
+    // Copy the share URL so WhatsApp/Facebook generate correct previews.
+    await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
