@@ -1,7 +1,8 @@
+```tsx
 import { useState, useRef, useEffect } from "react";
 import { Share2, X, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getPublicArticleUrl } from "@/lib/articleUrl";
+import { getPublicArticleUrl, getShareUrl } from "@/lib/articleUrl";
 
 interface ShareButtonProps {
   articleId: string;
@@ -20,8 +21,10 @@ const platforms = [
       </svg>
     ),
     color: "bg-[#25D366] hover:bg-[#1da851]",
-    getUrl: (url: string, title: string) => `https://wa.me/?text=${encodeURIComponent(title + " " + url)}`,
+    getUrl: (url: string) =>
+      `https://wa.me/?text=${encodeURIComponent(url)}`,
   },
+
   {
     name: "Facebook",
     icon: (
@@ -30,19 +33,26 @@ const platforms = [
       </svg>
     ),
     color: "bg-[#1877F2] hover:bg-[#0d65d9]",
-    getUrl: (url: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    getUrl: (url: string) =>
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        url
+      )}`,
   },
+
   {
     name: "X",
     icon: (
       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231z" />
       </svg>
     ),
-    color: "bg-[#000000] hover:bg-[#333333]",
+    color: "bg-black hover:bg-gray-800",
     getUrl: (url: string, title: string) =>
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+        title
+      )}&url=${encodeURIComponent(url)}`,
   },
+
   {
     name: "LinkedIn",
     icon: (
@@ -51,26 +61,53 @@ const platforms = [
       </svg>
     ),
     color: "bg-[#0A66C2] hover:bg-[#084e96]",
-    getUrl: (url: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+    getUrl: (url: string) =>
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+        url
+      )}`,
+  },
+
+  {
+    name: "Telegram",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+        <path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0z" />
+      </svg>
+    ),
+    color: "bg-[#0088cc] hover:bg-[#006da3]",
+    getUrl: (url: string, title: string) =>
+      `https://t.me/share/url?url=${encodeURIComponent(
+        url
+      )}&text=${encodeURIComponent(title)}`,
   },
 ];
 
-const ShareButton = ({ articleId, title, className = "" }: ShareButtonProps) => {
+const ShareButton = ({
+  articleId,
+  title,
+  className = "",
+  iconSize = 16,
+  variant = "overlay",
+}: ShareButtonProps) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
 
   const articleUrl = getPublicArticleUrl(articleId, title);
-
-  // IMPORTANT: Share OG preview endpoint
-  const shareUrl = `https://publicprimenews.in/share/article.php?id=${articleId}`;
+  const shareUrl = getShareUrl(articleId, title);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
     };
-    if (open) document.addEventListener("mousedown", handler);
+
+    if (open) {
+      document.addEventListener("mousedown", handler);
+    }
+
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
@@ -80,19 +117,47 @@ const ShareButton = ({ articleId, title, className = "" }: ShareButtonProps) => 
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleShare = (platform: any) => {
-    window.open(platform.getUrl(shareUrl, title), "_blank", "noopener,noreferrer");
+  const handleShare = (platform: (typeof platforms)[number]) => {
+    window.open(
+      platform.getUrl(shareUrl, title),
+      "_blank",
+      "noopener,noreferrer"
+    );
     setOpen(false);
   };
 
+  const isOverlay = variant === "overlay";
+
   return (
     <div ref={ref} className={`relative ${className}`}>
-      <button onClick={() => setOpen(!open)} className="bg-muted hover:bg-muted/80 rounded-full p-2">
-        <Share2 className="w-4 h-4" />
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setOpen(!open);
+        }}
+        className={`${
+          isOverlay
+            ? "bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm"
+            : "bg-muted hover:bg-muted/80 text-foreground"
+        } rounded-full p-2 transition-all`}
+        aria-label={language === "kn" ? "ಹಂಚಿಕೊಳ್ಳಿ" : "Share"}
+      >
+        <Share2 style={{ width: iconSize, height: iconSize }} />
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 bg-popover border rounded-lg shadow-lg p-3 w-56 z-50">
+        <div className="fixed z-[9999] bg-popover border border-border rounded-xl shadow-xl p-3 w-56">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold">
+              {language === "kn" ? "ಹಂಚಿಕೊಳ್ಳಿ" : "Share"}
+            </span>
+
+            <button onClick={() => setOpen(false)}>
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           <div className="grid grid-cols-5 gap-2 mb-2">
             {platforms.map((p) => (
               <button
@@ -105,15 +170,23 @@ const ShareButton = ({ articleId, title, className = "" }: ShareButtonProps) => 
             ))}
           </div>
 
-          <button onClick={copyLink} className="w-full flex items-center gap-2 text-xs bg-muted rounded-lg px-3 py-2">
-            {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+          <button
+            onClick={copyLink}
+            className="w-full flex items-center gap-2 text-xs bg-muted rounded-lg px-3 py-2"
+          >
+            {copied ? (
+              <Check className="w-3.5 h-3.5 text-green-500" />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
+
             {copied
               ? language === "kn"
                 ? "ಕಾಪಿ ಆಗಿದೆ!"
                 : "Copied!"
               : language === "kn"
-                ? "ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ"
-                : "Copy Link"}
+              ? "ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ"
+              : "Copy Link"}
           </button>
         </div>
       )}
@@ -122,3 +195,4 @@ const ShareButton = ({ articleId, title, className = "" }: ShareButtonProps) => 
 };
 
 export default ShareButton;
+```
