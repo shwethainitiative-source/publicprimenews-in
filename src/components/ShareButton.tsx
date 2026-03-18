@@ -17,8 +17,7 @@ const ShareButton = ({ articleId, title }: ShareButtonProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
 
-  const articleUrl = getPublicArticleUrl(articleId, title);
-  const shareUrl = getShareUrl(articleId, title);
+  const shareUrl = getPublicArticleUrl(articleId, title);
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(shareUrl);
