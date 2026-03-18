@@ -29,8 +29,7 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
  *  article-specific OG tags. The og:url in the response points to publicprimenews.in
  *  so WhatsApp displays the correct domain. Real users get 302-redirected to the article. */
 export const getShareUrl = (articleId: string, title?: string | null) => {
-  // Use a server-rendered share page so social crawlers see OG tags.
-  return `${SHARE_META_PAGE}?id=${encodeURIComponent(articleId)}`;
+  return `${SHARE_META_URL}?id=${encodeURIComponent(articleId)}`;
 };
 
 export const extractArticleIdFromParam = (param: string) => {
