@@ -1,43 +1,45 @@
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    const ua = request.headers.get("user-agent") || "";
+const BOT_REGEX =
+  /WhatsApp|facebookexternalhit|Twitterbot|Slackbot|TelegramBot|LinkedInBot|Discordbot|Pinterest|bot|crawler|spider/i;
+const ARTICLE_PATH_REGEX = /^\/article\/(.+)$/i;
+const UUID_SUFFIX_REGEX =
+  /([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
+const EDGE_FUNCTION_BASE_URL =
+  "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5dHhkbXh1aHhmZHBkcWJjcmVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mjk3NywiZXhwIjoyMDg2Mjk4OTc3fQ.WZaVQE2C-AA91Gv4Gplx4_jT7-mtSjzpgf_gYJiRs3I";
 
-    const botRegex =
-      /WhatsApp|facebookexternalhit|Twitterbot|Slackbot|TelegramBot|LinkedInBot|Discordbot|Pinterest|bot|crawler|spider/i;
-    const isBot = botRegex.test(ua);
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const userAgent = request.headers.get("user-agent") || "";
+  const isBot = BOT_REGEX.test(userAgent);
+  const articleMatch = url.pathname.match(ARTICLE_PATH_REGEX);
 
-    // Only intercept article paths for bots
-    const articleMatch = url.pathname.match(/^\/article\/(.+)$/);
+  if (isBot && articleMatch) {
+    const articleParam = articleMatch[1];
+    const articleId = articleParam.match(UUID_SUFFIX_REGEX)?.[1] ?? articleParam;
+    const edgeFnUrl = `${EDGE_FUNCTION_BASE_URL}?id=${encodeURIComponent(articleId)}`;
 
-    if (isBot && articleMatch) {
-      // Extract the UUID from the slug-id pattern
-      const param = articleMatch[1];
-      const uuidMatch = param.match(
-        /([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i
-      );
-      const articleId = uuidMatch ? uuidMatch[1] : param;
+    const metaRes = await fetch(edgeFnUrl, {
+      headers: {
+        "User-Agent": userAgent,
+        Accept: "text/html,application/xhtml+xml",
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
 
-      const edgeFnUrl = `https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta?id=${encodeURIComponent(articleId)}`;
+    return new Response(await metaRes.text(), {
+      status: metaRes.status,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=300",
+      },
+    });
+  }
 
-      const metaRes = await fetch(edgeFnUrl, {
-        headers: {
-          "User-Agent": ua,
-          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5dHhkbXh1aHhmZHBkcWJjcmVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MjI5NzcsImV4cCI6MjA4NjI5ODk3N30.WZaVQE2C-AA91Gv4Gplx4_jT7-mtSjzpgf_gYJiRs3I",
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5dHhkbXh1aHhmZHBkcWJjcmVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MjI5NzcsImV4cCI6MjA4NjI5ODk3N30.WZaVQE2C-AA91Gv4Gplx4_jT7-mtSjzpgf_gYJiRs3I",
-        },
-      });
+  return fetch(request);
+}
 
-      return new Response(metaRes.body, {
-        status: metaRes.status,
-        headers: {
-          "Content-Type": metaRes.headers.get("Content-Type") || "text/html; charset=utf-8",
-          "Cache-Control": "public, max-age=300",
-        },
-      });
-    }
-
-    // All other requests (normal users + non-article bot hits) pass through to origin
-    return fetch(request);
-  },
-};
+addEventListener("fetch", (event) => {
+  event.respondWith(handleRequest(event.request));
+});
