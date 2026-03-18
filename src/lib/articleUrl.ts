@@ -1,7 +1,5 @@
 const SITE_URL = "https://publicprimenews.in";
-// GoDaddy-friendly share endpoint (server-rendered OG tags).
-// This file is deployed as part of the static build output (copy `public/share/` to hosting root).
-const SHARE_META_PAGE = `${SITE_URL}/share/article.php`;
+const SHARE_META_URL = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta";
 
 const UUID_EXACT_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_SUFFIX_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
