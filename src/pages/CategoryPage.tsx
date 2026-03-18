@@ -206,9 +206,9 @@ const CategoryPage = () => {
                         {t(featured.title, featured.title_en)}
                       </h2>
                       {(featured.description || featured.description_en) && (
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                          {t(featured.description, featured.description_en)}
-                        </p>
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2"
+                          dangerouslySetInnerHTML={{ __html: t(featured.description, featured.description_en) }}
+                        />
                       )}
                       <div className="flex items-center gap-1.5 mt-2 text-muted-foreground text-xs">
                         <Clock className="w-3.5 h-3.5" />
