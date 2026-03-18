@@ -21,8 +21,7 @@ export const getArticlePath = (articleId: string, title?: string | null) => {
 
 /** Use current origin so shared links work on any hosting domain */
 export const getPublicArticleUrl = (articleId: string, title?: string | null) => {
-  const origin = typeof window !== "undefined" ? window.location.origin : SITE_URL;
-  return `${origin}${getArticlePath(articleId, title)}`;
+  return `${SITE_URL}${getArticlePath(articleId, title)}`;
 };
 
 /** URL for social sharing — goes through the edge function so crawlers get
