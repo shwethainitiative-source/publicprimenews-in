@@ -1,7 +1,5 @@
 const SITE_URL = "https://publicprimenews.in";
-// GoDaddy-friendly share endpoint (server-rendered OG tags).
-// This file is deployed as part of the static build output (copy `public/share/` to hosting root).
-const SHARE_META_PAGE = `${SITE_URL}/share/article.php`;
+const SHARE_META_URL = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta";
 
 const UUID_EXACT_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_SUFFIX_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -31,8 +29,7 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
  *  article-specific OG tags. The og:url in the response points to publicprimenews.in
  *  so WhatsApp displays the correct domain. Real users get 302-redirected to the article. */
 export const getShareUrl = (articleId: string, title?: string | null) => {
-  // Use a server-rendered share page so social crawlers see OG tags.
-  return `${SHARE_META_PAGE}?id=${encodeURIComponent(articleId)}`;
+  return `${SHARE_META_URL}?id=${encodeURIComponent(articleId)}`;
 };
 
 export const extractArticleIdFromParam = (param: string) => {
