@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Share2, X, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getPublicArticleUrl } from "@/lib/articleUrl";
+import { getPublicArticleUrl, getShareUrl } from "@/lib/articleUrl";
 
 interface ShareButtonProps {
   articleId: string;
