@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Share2, X, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getPublicArticleUrl, getShareUrl } from "@/lib/articleUrl";
+import { getPublicArticleUrl } from "@/lib/articleUrl";
 
 interface ShareButtonProps {
   articleId: string;
@@ -18,7 +18,6 @@ const ShareButton = ({ articleId, title }: ShareButtonProps) => {
   const { language } = useLanguage();
 
   const publicUrl = getPublicArticleUrl(articleId, title);
-  const shareUrl = getShareUrl(articleId, title);
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(publicUrl);
@@ -27,7 +26,7 @@ const ShareButton = ({ articleId, title }: ShareButtonProps) => {
   };
 
   const shareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, "_blank", "noopener,noreferrer");
   };
 
   return (
