@@ -17,16 +17,17 @@ const ShareButton = ({ articleId, title }: ShareButtonProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
 
-  const shareUrl = getPublicArticleUrl(articleId, title);
+  const publicUrl = getPublicArticleUrl(articleId, title);
+  const shareUrl = getShareUrl(articleId, title);
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(shareUrl);
+    await navigator.clipboard.writeText(publicUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const shareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, "_blank", "noopener,noreferrer");
   };
 
   return (
