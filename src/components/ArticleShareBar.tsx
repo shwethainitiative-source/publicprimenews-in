@@ -12,12 +12,13 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   const [copied, setCopied] = useState(false);
   const { language } = useLanguage();
 
-  const shareUrl = getPublicArticleUrl(articleId, title);
+  const publicUrl = getPublicArticleUrl(articleId, title);
+  const shareUrl = getShareUrl(articleId, title);
 
   const share = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(shareUrl);
+    await navigator.clipboard.writeText(publicUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
