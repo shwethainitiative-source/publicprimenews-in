@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Share2, Check } from "lucide-react";
-import { getPublicArticleUrl } from "@/lib/articleUrl";
+import { getPublicArticleUrl, getShareUrl } from "@/lib/articleUrl";
 
 interface ArticleShareBarProps {
   articleId: string;
@@ -11,7 +11,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   const [copied, setCopied] = useState(false);
 
   const publicUrl = getPublicArticleUrl(articleId, title);
-
+  const shareUrl = getShareUrl(articleId, title);
   const share = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
   const copyLink = async () => {
