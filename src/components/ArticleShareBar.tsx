@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Share2, Check } from "lucide-react";
-import { getPublicArticleUrl, getShareUrl } from "@/lib/articleUrl";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { getPublicArticleUrl } from "@/lib/articleUrl";
 
 interface ArticleShareBarProps {
   articleId: string;
@@ -10,10 +9,8 @@ interface ArticleShareBarProps {
 
 const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   const [copied, setCopied] = useState(false);
-  const { language } = useLanguage();
 
   const publicUrl = getPublicArticleUrl(articleId, title);
-  const shareUrl = getShareUrl(articleId, title);
 
   const share = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
@@ -26,7 +23,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   return (
     <div className="flex items-center gap-2 mt-4">
       <button
-        onClick={() => share(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`)}
+        onClick={() => share(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`)}
         className="w-10 h-10 rounded-lg bg-[#25D366] text-white flex items-center justify-center"
       >
         WhatsApp
