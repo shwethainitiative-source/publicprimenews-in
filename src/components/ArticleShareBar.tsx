@@ -23,7 +23,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   return (
     <div className="flex items-center gap-2 mt-4">
       <button
-        onClick={() => share(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`)}
+        onClick={() => share(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`)}
         className="w-10 h-10 rounded-lg bg-[#25D366] text-white flex items-center justify-center"
       >
         WhatsApp

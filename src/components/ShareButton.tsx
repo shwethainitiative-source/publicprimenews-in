@@ -27,7 +27,7 @@ const ShareButton = ({ articleId, title }: ShareButtonProps) => {
   };
 
   const shareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, "_blank", "noopener,noreferrer");
   };
 
   return (
