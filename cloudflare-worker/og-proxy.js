@@ -6,7 +6,7 @@ const UUID_SUFFIX_REGEX =
 const EDGE_FUNCTION_BASE_URL =
   "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta";
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5dHhkbXh1aHhmZHBkcWJjcmVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mjk3NywiZXhwIjoyMDg2Mjk4OTc3fQ.WZaVQE2C-AA91Gv4Gplx4_jT7-mtSjzpgf_gYJiRs3I";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5dHhkbXh1aHhmZHBkcWJjcmVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MjI5NzcsImV4cCI6MjA4NjI5ODk3N30.WZaVQE2C-AA91Gv4Gplx4_jT7-mtSjzpgf_gYJiRs3I";
 
 async function handleRequest(request) {
   const url = new URL(request.url);
