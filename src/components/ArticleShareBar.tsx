@@ -11,7 +11,7 @@ const ArticleShareBar = ({ articleId, title }: ArticleShareBarProps) => {
   const [copied, setCopied] = useState(false);
 
   const publicUrl = getPublicArticleUrl(articleId, title);
-  const shareUrl = getShareableArticleUrl(articleId);
+  const shareUrl = getShareableArticleUrl(articleId, title);
   const share = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
   const copyLink = async () => {

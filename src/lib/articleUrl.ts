@@ -24,9 +24,9 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
   return `${SITE_URL}${getArticlePath(articleId, title)}`;
 };
 
-/** URL used for social sharing — goes through the backend function so bots get proper OG metadata */
-export const getShareableArticleUrl = (articleId: string) => {
-  return `https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/share-meta?id=${articleId}`;
+/** URL used for social sharing — uses the canonical production URL */
+export const getShareableArticleUrl = (articleId: string, title?: string | null) => {
+  return getPublicArticleUrl(articleId, title);
 };
 
 export const extractArticleIdFromParam = (param: string) => {
