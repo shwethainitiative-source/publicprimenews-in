@@ -1,4 +1,5 @@
 const SITE_URL = "https://publicprimenews.in";
+const SUPABASE_PROJECT_ID = "wytxdmxuhxfdpdqbcrea";
 
 const UUID_EXACT_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_SUFFIX_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -18,9 +19,14 @@ export const getArticlePath = (articleId: string, title?: string | null) => {
   return `/article/${slug}-${articleId}`;
 };
 
-/** Use current origin so shared links work on any hosting domain */
+/** URL used for in-app navigation (canonical site URL) */
 export const getPublicArticleUrl = (articleId: string, title?: string | null) => {
   return `${SITE_URL}${getArticlePath(articleId, title)}`;
+};
+
+/** URL used for social sharing — goes through the backend function so bots get proper OG metadata */
+export const getShareableArticleUrl = (articleId: string) => {
+  return `https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/share-meta?id=${articleId}`;
 };
 
 export const extractArticleIdFromParam = (param: string) => {
