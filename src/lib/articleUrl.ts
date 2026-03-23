@@ -1,5 +1,4 @@
 const SITE_URL = "https://publicprimenews.in";
-const SHARE_META_URL = "https://wytxdmxuhxfdpdqbcrea.supabase.co/functions/v1/share-meta";
 
 const UUID_EXACT_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_SUFFIX_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -22,13 +21,6 @@ export const getArticlePath = (articleId: string, title?: string | null) => {
 /** Use current origin so shared links work on any hosting domain */
 export const getPublicArticleUrl = (articleId: string, title?: string | null) => {
   return `${SITE_URL}${getArticlePath(articleId, title)}`;
-};
-
-/** URL for social sharing — goes through the edge function so crawlers get
- *  article-specific OG tags. The og:url in the response points to publicprimenews.in
- *  so WhatsApp displays the correct domain. Real users get 302-redirected to the article. */
-export const getShareUrl = (articleId: string, title?: string | null) => {
-  return `${SHARE_META_URL}?id=${encodeURIComponent(articleId)}`;
 };
 
 export const extractArticleIdFromParam = (param: string) => {

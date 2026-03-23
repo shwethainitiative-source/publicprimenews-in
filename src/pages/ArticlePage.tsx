@@ -12,6 +12,23 @@ import ArticleShareBar from "@/components/ArticleShareBar";
 import { Clock } from "lucide-react";
 import { extractArticleIdFromParam, getPublicArticleUrl } from "@/lib/articleUrl";
 
+const DEFAULT_OG_IMAGE = "https://wytxdmxuhxfdpdqbcrea.supabase.co/storage/v1/render/image/public/site-assets/logo-1772179706320.png?width=1200&height=630&resize=contain&quality=80";
+
+const stripHtml = (value: string | null | undefined) =>
+  (value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const toSocialImageUrl = (value: string | null | undefined) => {
+  if (!value) return DEFAULT_OG_IMAGE;
+
+  return value.includes("/storage/v1/object/public/")
+    ? `${value.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/")}?width=1200&height=630&resize=cover&quality=80`
+    : value;
+};
+
 interface ArticleImage {
   id: string;
   image_url: string;
@@ -65,10 +82,9 @@ const ArticlePage = () => {
 
   const ogTitle = article ? (language === "kn" ? article.title : (article.title_en || article.title)) : "Public Prime News";
   const ogDesc = article
-    ? ((language === "kn" ? article.description : (article.description_en || article.description)) || "")
-        .replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().substring(0, 160)
-    : "";
-  const ogImage = (images[0]?.image_url || article?.thumbnail_url || "");
+    ? stripHtml(language === "kn" ? article.description : (article.description_en || article.description)).substring(0, 160)
+    : "Latest news and updates from Public Prime News.";
+  const ogImage = toSocialImageUrl(images[0]?.image_url || article?.thumbnail_url || DEFAULT_OG_IMAGE);
   const ogUrl = article ? getPublicArticleUrl(article.id, article.title_en || article.title) : "https://publicprimenews.in/";
 
   const formatTime = (dateStr: string) => {
@@ -93,12 +109,16 @@ const ArticlePage = () => {
           <meta property="og:title" content={ogTitle} />
           <meta property="og:description" content={ogDesc} />
           <meta property="og:image" content={ogImage} />
+          <meta property="og:image:secure_url" content={ogImage} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
           <meta property="og:url" content={ogUrl} />
           <meta property="og:site_name" content="Public Prime News" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={ogTitle} />
           <meta name="twitter:description" content={ogDesc} />
           <meta name="twitter:image" content={ogImage} />
+          <meta name="twitter:url" content={ogUrl} />
           <link rel="canonical" href={ogUrl} />
         </Helmet>
       )}
