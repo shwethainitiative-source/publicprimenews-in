@@ -271,10 +271,10 @@ const ManageNews = () => {
 
   const ArticleCard = ({ a }: { a: Article }) => (
     <Card>
-      <CardContent className="flex items-center gap-4 p-4">
-        {a.thumbnail_url && <img src={a.thumbnail_url} alt="" className="w-20 h-14 object-cover rounded" />}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-foreground truncate">{a.title}</h3>
+      <CardContent className="flex items-center gap-3 p-3">
+        {a.thumbnail_url && <img src={a.thumbnail_url} alt="" className="w-16 h-12 object-cover rounded shrink-0" />}
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <h3 className="font-semibold text-foreground truncate text-sm">{a.title}</h3>
           {a.title_en && <p className="text-xs text-muted-foreground truncate">{a.title_en}</p>}
           <p className="text-xs text-muted-foreground">{getCategoryName(a.category_id)} • {new Date(a.created_at).toLocaleDateString()}</p>
           <div className="flex gap-1 mt-1 flex-wrap">
@@ -288,9 +288,9 @@ const ManageNews = () => {
             {a.article_type === "podcast" && <span className="text-[10px] bg-blue-500/20 text-blue-700 px-1.5 py-0.5 rounded">Podcast</span>}
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={() => openEdit(a)}><Pencil className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => handleDelete(a.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+        <div className="flex gap-1 shrink-0">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(a)}><Pencil className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(a.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
         </div>
       </CardContent>
     </Card>
