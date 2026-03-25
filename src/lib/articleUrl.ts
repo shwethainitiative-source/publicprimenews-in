@@ -24,10 +24,9 @@ export const getPublicArticleUrl = (articleId: string, title?: string | null) =>
   return `${SITE_URL}${getArticlePath(articleId, title)}`;
 };
 
-/** URL used for social sharing — routes through edge function for OG meta */
-export const getShareableArticleUrl = (articleId: string, _title?: string | null) => {
-  const SUPABASE_URL = "https://wytxdmxuhxfdpdqbcrea.supabase.co";
-  return `${SUPABASE_URL}/functions/v1/share-meta?id=${articleId}`;
+/** URL used for social sharing — Cloudflare Worker intercepts bots for OG meta */
+export const getShareableArticleUrl = (articleId: string, title?: string | null) => {
+  return getPublicArticleUrl(articleId, title);
 };
 
 export const extractArticleIdFromParam = (param: string) => {
